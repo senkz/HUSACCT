@@ -1,22 +1,21 @@
 package husacct.define.domain;
 
 import husacct.ServiceProvider;
-import husacct.define.domain.module.Component;
-import husacct.define.domain.module.ExternalSystem;
-import husacct.define.domain.module.Facade;
-import husacct.define.domain.module.Layer;
-import husacct.define.domain.module.Module;
-import husacct.define.domain.module.SubSystem;
+import husacct.define.domain.appliedrules.AppliedRuleStrategy;
+import husacct.define.domain.module.ModuleFactory;
+import husacct.define.domain.module.ModuleStrategy;
+import husacct.define.domain.module.modules.Component;
+import husacct.define.domain.module.modules.Layer;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class SoftwareArchitecture {
 
-	private Module rootModule;
-
-	private ArrayList<AppliedRule> appliedRules;
-
+	private ModuleStrategy rootModule;
+	private ModuleStrategy dummyModule;
+	private ArrayList<AppliedRuleStrategy> appliedRules;
+	private ModuleFactory moduleFactory = new ModuleFactory();
 	private static SoftwareArchitecture instance = null;
 
 	public static SoftwareArchitecture getInstance(){
@@ -28,15 +27,18 @@ public class SoftwareArchitecture {
 	}
 
 	public SoftwareArchitecture() {
-		this("SoftwareArchitecture","This is the root of the architecture",new ArrayList<Module>(),new ArrayList<AppliedRule>());
+		this("SoftwareArchitecture","This is the root of the architecture",new ArrayList<ModuleStrategy>(),new ArrayList<AppliedRuleStrategy>());
+		dummyModule = moduleFactory.createDummy("Component");
+		dummyModule.setId(-1);
 	}
 
 	public SoftwareArchitecture(String name, String description) {
-		this(name,description,new ArrayList<Module>(),new ArrayList<AppliedRule>());
+		this(name,description,new ArrayList<ModuleStrategy>(),new ArrayList<AppliedRuleStrategy>());
 	}
 
-	public SoftwareArchitecture(String name, String description, ArrayList<Module> modules, ArrayList<AppliedRule> rules) {
-		rootModule = new Module(name, description);
+	public SoftwareArchitecture(String name, String description, ArrayList<ModuleStrategy> modules, ArrayList<AppliedRuleStrategy> rules) {
+		rootModule = moduleFactory.createModule("Component");
+		rootModule.set(name, description);
 		rootModule.setId(0);
 		setModules(modules);
 		setAppliedRules(rules);
@@ -58,26 +60,26 @@ public class SoftwareArchitecture {
 		return rootModule.getDescription();
 	}
 
-	public void setModules(ArrayList<Module> modules) {
+	public void setModules(ArrayList<ModuleStrategy> modules) {
 		rootModule.setSubModules(modules);
 	}
 
-	public ArrayList<Module> getModules() {
+	public ArrayList<ModuleStrategy> getModules() {
 		return rootModule.getSubModules();
 	}
 
-	public void setAppliedRules(ArrayList<AppliedRule> appliedRules) {
+	public void setAppliedRules(ArrayList<AppliedRuleStrategy> appliedRules) {
 		this.appliedRules = appliedRules;
 	}
 
-	public ArrayList<AppliedRule> getAppliedRules() {
+	public ArrayList<AppliedRuleStrategy> getAppliedRules() {
 		return appliedRules;
 	}
 
 
 	public ArrayList<Long> getAppliedRulesIdsByModuleFromId(long moduleId) {
 		ArrayList<Long> appliedRuleIds = new ArrayList<Long>();
-		for (AppliedRule rule : appliedRules){
+		for (AppliedRuleStrategy rule : appliedRules){
 			if (rule.getModuleFrom().getId() == moduleId){
 				appliedRuleIds.add(rule.getId());
 			}
@@ -85,14 +87,14 @@ public class SoftwareArchitecture {
 		return appliedRuleIds;
 	}
 
-	public ArrayList<AppliedRule> getGeneratedRules()
+	public ArrayList<AppliedRuleStrategy> getGeneratedRules()
 	{
 		return null; //TODO: Has to get an implementation
 	}
 
 	public ArrayList<Long> getAppliedRulesIdsByModuleToId(long moduleId) {
 		ArrayList<Long> appliedRuleIds = new ArrayList<Long>();
-		for (AppliedRule rule : appliedRules){
+		for (AppliedRuleStrategy rule : appliedRules){
 			if (rule.getModuleTo().getId() == moduleId){
 				appliedRuleIds.add(rule.getId());
 			}
@@ -100,7 +102,7 @@ public class SoftwareArchitecture {
 		return appliedRuleIds;
 	}
 
-	public void addAppliedRule(AppliedRule rule){
+	public void addAppliedRule(AppliedRuleStrategy rule){
 		if(!appliedRules.contains(rule) && !this.hasAppliedRule(rule.getId())){
 			appliedRules.add(rule);
 		}else{
@@ -109,12 +111,12 @@ public class SoftwareArchitecture {
 	}
 
 	public void removeAppliedRules() {
-		appliedRules = new ArrayList<AppliedRule>();
+		appliedRules = new ArrayList<AppliedRuleStrategy>();
 	}
 
 	public void removeLayerAppliedRules() {
-		ArrayList<AppliedRule>rulesTobeRemoved = new ArrayList<AppliedRule>();
-		for (AppliedRule rules : appliedRules) {
+		ArrayList<AppliedRuleStrategy>rulesTobeRemoved = new ArrayList<AppliedRuleStrategy>();
+		for (AppliedRuleStrategy rules : appliedRules) {
 			String moduleFromType =rules.getModuleFrom().getType().toLowerCase();
 			String moduleToType=rules.getModuleTo().getType().toLowerCase();
 			String ruleType=rules.getRuleType();
@@ -123,7 +125,7 @@ public class SoftwareArchitecture {
 				rulesTobeRemoved.add(rules);
 			}
 		}
-		for (AppliedRule rule : rulesTobeRemoved) {
+		for (AppliedRuleStrategy rule : rulesTobeRemoved) {
 			int index= appliedRules.indexOf(rule);
 			appliedRules.remove(index);
 		}
@@ -131,7 +133,7 @@ public class SoftwareArchitecture {
 
 	public void removeAppliedRule(long appliedRuleId){
 		if(this.hasAppliedRule(appliedRuleId)){
-			AppliedRule rule = getAppliedRuleById(appliedRuleId);
+			AppliedRuleStrategy rule = getAppliedRuleById(appliedRuleId);
 			appliedRules.remove(rule);
 		}else{
 			throw new RuntimeException(ServiceProvider.getInstance().getLocaleService().getTranslatedString("NoRule"));
@@ -140,7 +142,7 @@ public class SoftwareArchitecture {
 
 	private boolean hasAppliedRule(long ruleID){
 		boolean ruleFound = false;
-		for(AppliedRule rule : appliedRules){
+		for(AppliedRuleStrategy rule : appliedRules){
 			if(rule.getId() == ruleID){
 				ruleFound = true;
 			}
@@ -148,10 +150,9 @@ public class SoftwareArchitecture {
 		return ruleFound;
 	}
 
-	public AppliedRule getAppliedRuleById(long appliedRuleId){
-		AppliedRule appliedRule = new AppliedRule();
+	public AppliedRuleStrategy getAppliedRuleById(long appliedRuleId){
 		if(this.hasAppliedRule(appliedRuleId)){
-			for(AppliedRule rule : appliedRules){
+			for(AppliedRuleStrategy rule : appliedRules){
 				if(rule.getId() == appliedRuleId){
 					return rule;
 				}
@@ -159,12 +160,12 @@ public class SoftwareArchitecture {
 		}else{
 			throw new RuntimeException(ServiceProvider.getInstance().getLocaleService().getTranslatedString("NoRule"));
 		}
-		return appliedRule;
+		return null;
 	}
 
-	public ArrayList<AppliedRule> getEnabledAppliedRules() {
-		ArrayList<AppliedRule> enabledRuleList =  new ArrayList<AppliedRule>();
-		for (AppliedRule ar : appliedRules){
+	public ArrayList<AppliedRuleStrategy> getEnabledAppliedRules() {
+		ArrayList<AppliedRuleStrategy> enabledRuleList =  new ArrayList<AppliedRuleStrategy>();
+		for (AppliedRuleStrategy ar : appliedRules){
 			if (ar.isEnabled()){
 				enabledRuleList.add(ar);
 			}
@@ -183,30 +184,33 @@ public class SoftwareArchitecture {
 		return softwareUnit;
 	}
 
-	public Module getModuleById(long moduleId) {
-		Module currentModule = null;
+	public ModuleStrategy getModuleById(long moduleId) {
+		ModuleStrategy currentModule = null;
 		if (rootModule.getId() == moduleId || rootModule.hasSubModule(moduleId)){
 			currentModule = rootModule;
 			while (currentModule.getId() != moduleId){
-				for (Module subModule : currentModule.getSubModules()){
+				for (ModuleStrategy subModule : currentModule.getSubModules()){
 					if (subModule.getId() == moduleId || subModule.hasSubModule(moduleId)){
 						currentModule = subModule;
 					}
 				}
 			}
 		}
+		if(moduleId == -1){
+			currentModule = dummyModule;
+		}
 		if (currentModule == null){
-			throw new RuntimeException(ServiceProvider.getInstance().getLocaleService().getTranslatedString("NoModule"));
+			currentModule = dummyModule;
 		}
 		return currentModule;
 	}
 
-	public Module getModuleBySoftwareUnit(String softwareUnitName) {
-		Module currentModule = null;
+	public ModuleStrategy getModuleBySoftwareUnit(String softwareUnitName) {
+		ModuleStrategy currentModule = null;
 		if (rootModule.hasSoftwareUnit(softwareUnitName)){
 			currentModule = rootModule;
 			while (!currentModule.hasSoftwareUnitDirectly(softwareUnitName)){
-				for (Module subModule : currentModule.getSubModules()){
+				for (ModuleStrategy subModule : currentModule.getSubModules()){
 					if (subModule.hasSoftwareUnit(softwareUnitName)){
 						currentModule = subModule;
 					}
@@ -219,12 +223,12 @@ public class SoftwareArchitecture {
 		return currentModule;
 	}
 
-	public Module getModuleByRegExSoftwareUnit(String softwareUnitName) {
-		Module currentModule = null;
+	public ModuleStrategy getModuleByRegExSoftwareUnit(String softwareUnitName) {
+		ModuleStrategy currentModule = null;
 		if (rootModule.hasRegExSoftwareUnit(softwareUnitName)){
 			currentModule = rootModule;
 			while (!currentModule.hasRegExSoftwareUnitDirectly(softwareUnitName)){
-				for (Module subModule : currentModule.getSubModules()){
+				for (ModuleStrategy subModule : currentModule.getSubModules()){
 					if (subModule.hasRegExSoftwareUnit(softwareUnitName)){
 						currentModule = subModule;
 					}
@@ -238,7 +242,7 @@ public class SoftwareArchitecture {
 	}
 
 
-	public long addModule(Module module){
+	public long addModule(ModuleStrategy module){
 		long moduleId;
 		if(!this.hasModule(module.getName())) {
 			rootModule.addSubModule(module);
@@ -250,7 +254,7 @@ public class SoftwareArchitecture {
 		return moduleId;
 	}
 
-	public String addNewModule(Module module){
+	public String addNewModule(ModuleStrategy module){
 		if(this.hasModule(module.getName())) {
 			return ServiceProvider.getInstance().getLocaleService().getTranslatedString("SameNameModule");
 		} else {
@@ -260,20 +264,20 @@ public class SoftwareArchitecture {
 	}
 
 	public void removeAllModules() {
-		rootModule.setSubModules(new ArrayList<Module>());
+		rootModule.setSubModules(new ArrayList<ModuleStrategy>());
 	}
 
 	//TODO: Needs revising, too big
-	public void removeModule(Module moduleToRemove){
+	public void removeModule(ModuleStrategy moduleToRemove){
 		if (moduleToRemove.equals(rootModule)){return;}
 		removeRelatedRules(moduleToRemove);
-		Module currentModule = null;
+		ModuleStrategy currentModule = null;
 		boolean moduleFound = false;
 		if(rootModule.getSubModules().contains(moduleToRemove)) {
 			moduleFound = true;
 			rootModule.getSubModules().remove(moduleToRemove);
 		}else{
-			for (Module mod : rootModule.getSubModules()){
+			for (ModuleStrategy mod : rootModule.getSubModules()){
 				if(mod.getSubModules().contains(moduleToRemove)) {
 					mod.getSubModules().remove(moduleToRemove);
 					moduleFound = true;
@@ -281,7 +285,7 @@ public class SoftwareArchitecture {
 				}else if (mod.hasSubModule(moduleToRemove.getId())){	
 					currentModule = mod;
 					while (mod.hasSubModule(moduleToRemove.getId())){
-						for (Module subModule : currentModule.getSubModules()){
+						for (ModuleStrategy subModule : currentModule.getSubModules()){
 							if (subModule.getId() == moduleToRemove.getId()){
 								currentModule.removeSubModule(subModule);
 								moduleFound = true;
@@ -299,19 +303,19 @@ public class SoftwareArchitecture {
 		}
 	}
 
-	private void removeRelatedRules(Module module) {
+	private void removeRelatedRules(ModuleStrategy module) {
 		//Copy all currentValues into another list to prevent ConcurrentModificationExceptions 
 		@SuppressWarnings("unchecked")
-		ArrayList<AppliedRule> tmpList = (ArrayList<AppliedRule>) appliedRules.clone();
-		for (AppliedRule rule : appliedRules){
+		ArrayList<AppliedRuleStrategy> tmpList = (ArrayList<AppliedRuleStrategy>) appliedRules.clone();
+		for (AppliedRuleStrategy rule : appliedRules){
 			if (rule.getModuleFrom().equals(module) || 
 					rule.getModuleTo().equals(module)){
 				tmpList.remove(rule);
 			}	
 
 			@SuppressWarnings("unchecked")
-			ArrayList<AppliedRule> tmpExceptionList = (ArrayList<AppliedRule>) rule.getExceptions().clone();
-			for (AppliedRule exceptionRule : rule.getExceptions()){
+			ArrayList<AppliedRuleStrategy> tmpExceptionList = (ArrayList<AppliedRuleStrategy>) rule.getExceptions().clone();
+			for (AppliedRuleStrategy exceptionRule : rule.getExceptions()){
 				if (exceptionRule.getModuleFrom().equals(module) || 
 						exceptionRule.getModuleTo().equals(module)){
 					tmpExceptionList.remove(exceptionRule);
@@ -327,7 +331,7 @@ public class SoftwareArchitecture {
 			return true;
 		} 
 		else {
-			for(Module module : rootModule.getSubModules()) {
+			for(ModuleStrategy module : rootModule.getSubModules()) {
 				if(module.getName().equals(name)) {
 					return true;
 				}
@@ -336,19 +340,19 @@ public class SoftwareArchitecture {
 		return false;
 	}
 
-	public Module getModuleByLogicalPath(String logicalPath) {
-		Module currentModule = null;
+	public ModuleStrategy getModuleByLogicalPath(String logicalPath) {
+		ModuleStrategy currentModule = null;
 		if (logicalPath.equals("**")){
 			currentModule = rootModule;
 		} else {
 			String[] moduleNames = logicalPath.split("\\.");
 			int i = 0;
-			for (Module module : rootModule.getSubModules()){
+			for (ModuleStrategy module : rootModule.getSubModules()){
 				if (module.getName().equals(moduleNames[i])){
 					currentModule = module;
 
 					for (int j = i;j<moduleNames.length;j++){
-						for (Module subModule : currentModule.getSubModules()){
+						for (ModuleStrategy subModule : currentModule.getSubModules()){
 							if (subModule.getName().equals(moduleNames[j])){
 								currentModule = subModule;							
 							}
@@ -366,20 +370,20 @@ public class SoftwareArchitecture {
 
 	public String getModulesLogicalPath(long moduleId) {
 		String logicalPath = "";
-		Module wantedModule =  getModuleById(moduleId);
-		Module currentModule = null;
+		ModuleStrategy wantedModule =  getModuleById(moduleId);
+		ModuleStrategy currentModule = null;
 
 		if (rootModule.getId() == moduleId){
 			logicalPath = "**";
 		} else {
-			for (Module mod : rootModule.getSubModules()){
+			for (ModuleStrategy mod : rootModule.getSubModules()){
 				if (mod.getName().equals(wantedModule.getName()) || 
 						mod.hasSubModule(wantedModule.getName())){
 					logicalPath += mod.getName();
 					currentModule = mod;
 
 					while (!currentModule.getName().equals(wantedModule.getName())){
-						for (Module subModule : currentModule.getSubModules()){
+						for (ModuleStrategy subModule : currentModule.getSubModules()){
 							if (subModule.getName().equals(wantedModule.getName()) ||
 									subModule.hasSubModule(wantedModule.getName())){
 								logicalPath += "." + subModule.getName();
@@ -400,14 +404,14 @@ public class SoftwareArchitecture {
 		if (rootModule.getId() == childModuleId){
 			parentModuleId = -1;
 		} else {
-			for(Module module : rootModule.getSubModules()) {
+			for(ModuleStrategy module : rootModule.getSubModules()) {
 				if (module.getId() == childModuleId) {
 					parentModuleId = rootModule.getId();
 				} else {
 					if (module.hasSubModule(childModuleId)) {
-						Module currentModule = module;
+						ModuleStrategy currentModule = module;
 						while(parentModuleId == -1L) {
-							for (Module subModule : currentModule.getSubModules()) {
+							for (ModuleStrategy subModule : currentModule.getSubModules()) {
 								if (subModule.getId() == childModuleId) {
 									parentModuleId = currentModule.getId();
 									break;
@@ -435,7 +439,7 @@ public class SoftwareArchitecture {
 
 	private Layer getTheFirstLayerAbove(int currentHierarchicalLevel, long parentModuleId){
 		Layer layer = null;
-		for (Module mod : getModulesForLayerSorting(parentModuleId)){
+		for (ModuleStrategy mod : getModulesForLayerSorting(parentModuleId)){
 			if (mod instanceof Layer) {
 				Layer l = (Layer)mod;
 				if (l.getHierarchicalLevel() < currentHierarchicalLevel &&
@@ -473,7 +477,7 @@ public class SoftwareArchitecture {
 
 	public Layer getTheFirstLayerBelow(int currentHierarchicalLevel, long parentModuleId){
 		Layer layer = null;
-		for (Module mod : getModulesForLayerSorting(parentModuleId)){
+		for (ModuleStrategy mod : getModulesForLayerSorting(parentModuleId)){
 			if (mod instanceof Layer) {
 				Layer l = (Layer)mod;
 				if (l.getHierarchicalLevel() > currentHierarchicalLevel &&
@@ -485,10 +489,10 @@ public class SoftwareArchitecture {
 		return layer;
 	}
 
-	private ArrayList<Module> getModulesForLayerSorting(long parentModuleId) {
-		ArrayList<Module> modulesToCheck = rootModule.getSubModules();
+	private ArrayList<ModuleStrategy> getModulesForLayerSorting(long parentModuleId) {
+		ArrayList<ModuleStrategy> modulesToCheck = rootModule.getSubModules();
 		if(parentModuleId != -1L) {
-			Module parentModule = getModuleById(parentModuleId);
+			ModuleStrategy parentModule = getModuleById(parentModuleId);
 			modulesToCheck = parentModule.getSubModules();
 		}
 		return modulesToCheck;
@@ -500,80 +504,41 @@ public class SoftwareArchitecture {
 		layerTwo.setHierarchicalLevel(hierarchicalLevelLayerOne);
 	}
 
-	public Module getRootModule() {
+	public ModuleStrategy getRootModule() {
 		return rootModule;
 	}
 
-	public Module updateModuleType(Module oldModule, String newType) {
-
-		System.out.println(oldModule.getClass().getName()); //TODO: Print line?
-		Module parent = oldModule.getparent();
+	public ModuleStrategy updateModuleType(ModuleStrategy oldModule, String newType) {
+		ModuleStrategy parent = oldModule.getparent();
 
 		int index = oldModule.getparent().getSubModules().indexOf(oldModule);
 		parent.getSubModules().remove(index);
-		Module updatedModule =generateNewType(oldModule,newType) ;
+		ModuleStrategy updatedModule =generateNewType(oldModule,newType) ;
 		parent.addSubModule(index,updatedModule );
 
 		return updatedModule;	
 	}
 
-	//TODO: Holy sh...
-	private Module generateNewType(Module oldModule,String newType) {
-		Long id=oldModule.getId();
-		String name= oldModule.getName();
-		String desc = oldModule.getDescription();
-		ArrayList<SoftwareUnitDefinition> softwareUnits = oldModule.getUnits();
-		ArrayList<Module> subModules = oldModule.getSubModules();
-		processDefaultComponents(oldModule);
+	private ModuleStrategy generateNewType(ModuleStrategy oldModule,String newType) {
+		ModuleStrategy module = moduleFactory.createModule(newType);
+		module.set(oldModule.getName(), oldModule.getDescription());
+		module.setId(oldModule.getId());
+		module.setSubModules(oldModule.getSubModules());
+		module.setUnits(oldModule.getUnits());
 
-		if (ServiceProvider.getInstance().getLocaleService().getTranslatedString("Layer").toLowerCase().equals(newType.toLowerCase())) {
-			Layer layer = new Layer();
-			layer.setDescription(desc);
-			layer.setId(id);
-			layer.setName(name);
-			layer.setType(newType);
-			layer.setSubModules(subModules);
-			layer.setUnits(softwareUnits);
-			return layer;
-		} else if(ServiceProvider.getInstance().getLocaleService().getTranslatedString("Component").toLowerCase().equals(newType.toLowerCase())) {
-			Component component = new Component();
-			component.setDescription(desc);
-			component.setId(id);
-			component.setName(name);
-			component.setType(newType);
-			Facade f = new Facade("Facade"+name,"is Facade of "+name);
-			subModules.add(f);
-			Collections.reverse(subModules);
-			component.setSubModules(subModules);
-			component.setUnits(softwareUnits);
-
-			return component;
-		}else if(ServiceProvider.getInstance().getLocaleService().getTranslatedString("SubSystem").toLowerCase().equals(newType.toLowerCase())) {
-			SubSystem subSystem = new SubSystem();
-			subSystem.setDescription(desc);
-			subSystem.setId(id);
-			subSystem.setName(name);
-			subSystem.setType(newType);
-			subSystem.setSubModules(subModules);
-			subSystem.setUnits(softwareUnits);
-			return subSystem;
-		}else if(ServiceProvider.getInstance().getLocaleService().getTranslatedString("ExternalLibrary").toLowerCase().equals(newType.toLowerCase())) {
-			ExternalSystem externalSystem = new ExternalSystem();
-			externalSystem.setDescription(desc);
-			externalSystem.setId(id);
-			externalSystem.setName(name);
-			externalSystem.setType(newType);
-			externalSystem.setSubModules(subModules);
-			externalSystem.setUnits(softwareUnits);
-			return externalSystem;
-		}else{
-			return null;
+		if(newType.equals("Component")){
+			ModuleStrategy facade = moduleFactory.createModule("Facade"); 
+			facade.set("Facade"+oldModule.getName(),"is Facade of "+oldModule.getName());
+			oldModule.getSubModules().add(facade);
+			Collections.reverse(oldModule.getSubModules());
+			module.setSubModules(oldModule.getSubModules());
+			module.setUnits(oldModule.getUnits());
 		}
-
-
+		processDefaultComponents(oldModule);
+		return module;
 	}
 
-	private void processDefaultComponents(Module oldModule) {
+	private void processDefaultComponents(ModuleStrategy oldModule) {
 		if (oldModule instanceof Component) {
 			oldModule.getSubModules().remove(0);
 		}

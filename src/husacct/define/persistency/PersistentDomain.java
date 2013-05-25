@@ -1,24 +1,24 @@
 package husacct.define.persistency;
 
-import java.util.ArrayList;
-import org.jdom2.Element;
-
 import husacct.ServiceProvider;
 import husacct.common.dto.ProjectDTO;
 import husacct.common.savechain.ISaveable;
 import husacct.define.domain.Application;
-import husacct.define.domain.AppliedRule;
 import husacct.define.domain.Project;
 import husacct.define.domain.SoftwareArchitecture;
-import husacct.define.domain.module.Module;
+import husacct.define.domain.appliedrules.AppliedRuleStrategy;
+import husacct.define.domain.module.ModuleStrategy;
 import husacct.define.domain.services.AppliedRuleDomainService;
 import husacct.define.domain.services.AppliedRuleExceptionDomainService;
 import husacct.define.domain.services.ModuleDomainService;
 import husacct.define.domain.services.SoftwareArchitectureDomainService;
 
+import java.util.ArrayList;
+
+import org.jdom2.Element;
+
 /**
  * This class enabled the feature to have the domain stored in XML format
- * @author Dennis vd Waardenburg
  * @name PersistentDomain
  *
  */
@@ -103,18 +103,18 @@ public class PersistentDomain implements ISaveable {
 				}
 				ServiceProvider.getInstance().getDefineService().createApplication(workspaceApplication.getName(), projects, workspaceApplication.getVersion());
 				domainService.createNewArchitectureDefinition(workspaceArchitecture.getName());
-				for (Module m : workspaceArchitecture.getModules()) {
+				for (ModuleStrategy m : workspaceArchitecture.getModules()) {
 					long rootModule = moduleService.addModuleToRoot(m);
 					if (m.getSubModules().size() > 0) {
-						for (Module subModule : m.getSubModules()) {
+						for (ModuleStrategy subModule : m.getSubModules()) {
 							moduleService.addModuleToParent(rootModule, subModule);
 						}
 					}
 				}
-				for (AppliedRule ApplRule : workspaceArchitecture.getAppliedRules()) {
+				for (AppliedRuleStrategy ApplRule : workspaceArchitecture.getAppliedRules()) {
 					long addedRule = appliedRuleService.addAppliedRule(ApplRule.getRuleType(), ApplRule.getDescription(), ApplRule.getDependencies(), ApplRule.getRegex(), ApplRule.getModuleFrom().getId(), ApplRule.getModuleTo().getId(), ApplRule.isEnabled());
 					if (ApplRule.getExceptions().size() > 0) {
-						for (AppliedRule Ap : ApplRule.getExceptions()) {
+						for (AppliedRuleStrategy Ap : ApplRule.getExceptions()) {
 							exceptionService.addExceptionToAppliedRule(addedRule, Ap.getRuleType(), Ap.getDescription(), Ap.getModuleFrom().getId(), Ap.getModuleTo().getId(), Ap.getDependencies());
 						}
 					}

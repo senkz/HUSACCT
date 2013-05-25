@@ -1,7 +1,7 @@
 package husacct.define.presentation.moduletree;
 
 import husacct.common.Resource;
-import husacct.define.domain.module.Facade;
+import husacct.define.domain.module.modules.Facade;
 import husacct.define.task.components.AbstractCombinedComponent;
 import husacct.define.task.components.AbstractDefineComponent;
 import husacct.define.task.components.AnalyzedModuleComponent;

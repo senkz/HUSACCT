@@ -1,8 +1,5 @@
 package husacct.bootstrap;
 
-import husacct.define.domain.SoftwareArchitecture;
-
-import java.util.HashMap;
 
 public class DefineJavaBenchmark extends AbstractBootstrap{
 
@@ -19,9 +16,9 @@ public class DefineJavaBenchmark extends AbstractBootstrap{
 	}
 	
 	private void defineLogicalModules(){
-		getDefineService().getDefinitionController().addLayer(0, "Presentation Layer", "This is the presentation layer of the benchmark");
-		getDefineService().getDefinitionController().addLayer(0, "Domain Layer", "This is the domain layer of the benchmark");
-		getDefineService().getDefinitionController().addLayer(0, "Infrastructure Layer", "This is the infrastructure layer of the benchmark");
+		getDefineService().getDefinitionController().addModule(0, "Presentation Layer", "This is the presentation layer of the benchmark", "Layer");
+		getDefineService().getDefinitionController().addModule(0, "Domain Layer", "This is the domain layer of the benchmark", "Layer");
+		getDefineService().getDefinitionController().addModule(0, "Infrastructure Layer", "This is the infrastructure layer of the benchmark", "Layer");
 	}
 	
 	private void defineRules(){

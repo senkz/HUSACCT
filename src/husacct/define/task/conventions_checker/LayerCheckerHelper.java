@@ -1,8 +1,8 @@
 package husacct.define.task.conventions_checker;
 
 import husacct.ServiceProvider;
-import husacct.define.domain.module.Layer;
-import husacct.define.domain.module.Module;
+import husacct.define.domain.module.ModuleStrategy;
+import husacct.define.domain.module.modules.Layer;
 import husacct.define.domain.services.ModuleDomainService;
 
 import java.util.ArrayList;
@@ -12,26 +12,26 @@ public class LayerCheckerHelper {
 	private ArrayList<Layer> layers;
 	private String errorMessage;
 	
-	public LayerCheckerHelper(Module moduleFrom) {
+	public LayerCheckerHelper(ModuleStrategy moduleFrom) {
 		this.layers = new ArrayList<Layer>();
 		this.fillLayerList(moduleFrom);
 		this.setErrorMessage("");
 	}
 	
-	public void fillLayerList(Module moduleFrom) {
-		ArrayList<Module> currentModules = getCurrentModules(moduleFrom);
-		for(Module module : currentModules) {
+	public void fillLayerList(ModuleStrategy moduleFrom) {
+		ArrayList<ModuleStrategy> currentModules = getCurrentModules(moduleFrom);
+		for(ModuleStrategy module : currentModules) {
 			if(module instanceof Layer) {
 				layers.add((Layer) module);
 			}
 		}
 	}
 	
-	private ArrayList<Module> getCurrentModules(Module moduleFrom) {
+	private ArrayList<ModuleStrategy> getCurrentModules(ModuleStrategy moduleFrom) {
 		ModuleDomainService moduleService = new ModuleDomainService();
 		Long parentId = moduleService.getParentModuleIdByChildId(moduleFrom.getId());
 		if(parentId != -1) {
-			Module parentModule = moduleService.getModuleById(parentId);
+			ModuleStrategy parentModule = moduleService.getModuleById(parentId);
 			moduleService.sortModuleChildren(parentModule);
 			return parentModule.getSubModules();
 		} else {
@@ -39,7 +39,7 @@ public class LayerCheckerHelper {
 		}
 	}
 	
-	public boolean checkTypeIsLayer(Module module) {
+	public boolean checkTypeIsLayer(ModuleStrategy module) {
 		if(module.getType() == "Layer") {
 			return true;
 		} else {
@@ -107,7 +107,7 @@ public class LayerCheckerHelper {
 		return -1L;
 	}
 	
-	public Module getLayerById(Long layerId) {
+	public ModuleStrategy getLayerById(Long layerId) {
 		Layer returnLayer = new Layer();
 		for(Layer layer : layers) {
 			if(layer.getId() == layerId) {

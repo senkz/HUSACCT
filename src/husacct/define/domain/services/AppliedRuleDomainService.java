@@ -1,85 +1,85 @@
 package husacct.define.domain.services;
 
 import husacct.ServiceProvider;
-import husacct.define.domain.AppliedRule;
 import husacct.define.domain.SoftwareArchitecture;
-import husacct.define.domain.module.Module;
+import husacct.define.domain.appliedrules.AppliedRuleFactory;
+import husacct.define.domain.appliedrules.AppliedRuleStrategy;
+import husacct.define.domain.module.ModuleStrategy;
 
 import java.util.ArrayList;
 
 public class AppliedRuleDomainService {
+	
+	private AppliedRuleFactory ruleFactory = new AppliedRuleFactory();
 
-	public AppliedRule[] getAppliedRules(boolean enabledRulesOnly) { 
-		ArrayList<AppliedRule> ruleList;
+	public AppliedRuleStrategy[] getAppliedRules(boolean enabledRulesOnly) { 
+		ArrayList<AppliedRuleStrategy> ruleList;
 		if (enabledRulesOnly) {
 			ruleList = SoftwareArchitecture.getInstance().getEnabledAppliedRules();
 		} else {
 			ruleList = SoftwareArchitecture.getInstance().getAppliedRules();
 		}
-		AppliedRule[] rules = new AppliedRule[ruleList.size()]; 
+		AppliedRuleStrategy[] rules = new AppliedRuleStrategy[ruleList.size()]; 
 		ruleList.toArray(rules);
 
 		return rules;
 	}
 
-	public AppliedRule[] getAppliedRules() {
+	public AppliedRuleStrategy[] getAppliedRules() {
 		return getAppliedRules(false);
-	}
-
+	}  
+	
 	public long addAppliedRule(String ruleTypeKey, String description, String[] dependencies,
 			String regex, long moduleFromId, long moduleToId, boolean enabled) {
-		Module moduleFrom = SoftwareArchitecture.getInstance().getModuleById(moduleFromId);
-		Module moduleTo;
-		if (moduleToId != -1){
-			moduleTo = SoftwareArchitecture.getInstance().getModuleById(moduleToId);
-		} else {
-			moduleTo = new Module();
-		}
-
+		ModuleStrategy moduleFrom = SoftwareArchitecture.getInstance().getModuleById(moduleFromId);
+		ModuleStrategy moduleTo = SoftwareArchitecture.getInstance().getModuleById(moduleToId);
+		
 		return addAppliedRule(ruleTypeKey,description,dependencies,regex,moduleFrom , moduleTo, enabled);
-	}          
-
+	} 
+	
 	public long addAppliedRule(String ruleTypeKey, String description, String[] dependencies,
-			String regex, Module moduleFrom, Module moduleTo, boolean enabled) {
-
-		AppliedRule rule = new AppliedRule(ruleTypeKey,description,dependencies,regex,moduleFrom, moduleTo, enabled);
+			String regex, ModuleStrategy moduleFrom, ModuleStrategy moduleTo, boolean enabled) {
+		
+		AppliedRuleStrategy rule = ruleFactory.createRule(ruleTypeKey);
+		rule.setAppliedRule(description, dependencies, regex, moduleFrom, moduleTo, enabled);
 		if(isDuplicate(rule)){
+			ServiceProvider.getInstance().getDefineService().notifyServiceListeners();
 			return -1;
-		}		
+		}
 		SoftwareArchitecture.getInstance().addAppliedRule(rule);
 		ServiceProvider.getInstance().getDefineService().notifyServiceListeners();
-
 		return rule.getId();
 	}
-
+	
 	public void updateAppliedRule(long appliedRuleId, Boolean isGenerated, String ruleTypeKey,String description, String[] dependencies, 
 			String regex,long moduleFromId, long moduleToId, boolean enabled) {
 
-		Module moduleFrom = SoftwareArchitecture.getInstance().getModuleById(moduleFromId);
-		Module moduleTo = SoftwareArchitecture.getInstance().getModuleById(moduleToId);
+		ModuleStrategy moduleFrom = SoftwareArchitecture.getInstance().getModuleById(moduleFromId);
+		ModuleStrategy moduleTo = SoftwareArchitecture.getInstance().getModuleById(moduleToId);
 		updateAppliedRule(appliedRuleId, ruleTypeKey, description, dependencies, 
 				regex, moduleFrom, moduleTo, enabled);
 	}
-
-	public void updateAppliedRule(long appliedRuleId, String ruleTypeKey,String description, String[] dependencies, 
-			String regex, Module moduleFrom, Module moduleTo, boolean enabled) {
-		AppliedRule rule = SoftwareArchitecture.getInstance().getAppliedRuleById(appliedRuleId);
-		rule.setRuleType(ruleTypeKey);
-		rule.setDescription(description);
-		rule.setDependencies(dependencies);
-		rule.setRegex(regex);
-		rule.setModuleFrom(moduleFrom);
-		rule.setModuleTo(moduleTo);
-		rule.setEnabled(enabled);
+	
+	public long updateAppliedRule(long appliedRuleId, String ruleTypeKey,String description, String[] dependencies, 
+			String regex, ModuleStrategy moduleFrom, ModuleStrategy moduleTo, boolean enabled) {
+		
+		AppliedRuleStrategy dummyRule = ruleFactory.createDummyRule(ruleTypeKey);
+		dummyRule.setAppliedRule(description, dependencies, regex, moduleFrom, moduleTo, enabled);
+		if(isDuplicate(dummyRule)){
+			return -1;
+		}
+		
+		AppliedRuleStrategy rule = SoftwareArchitecture.getInstance().getAppliedRuleById(appliedRuleId);
+		rule.setAppliedRule(dummyRule);
+		
 		ServiceProvider.getInstance().getDefineService().notifyServiceListeners();
+		return rule.getId();
 	}
 
 	public void removeAppliedRules() {
 		SoftwareArchitecture.getInstance().removeAppliedRules();
 		ServiceProvider.getInstance().getDefineService().notifyServiceListeners();
 	}
-
-
 
 	public void removeAppliedRule(long appliedrule_id) {
 		SoftwareArchitecture.getInstance().removeAppliedRule(appliedrule_id);
@@ -111,21 +111,30 @@ public class AppliedRuleDomainService {
 		return SoftwareArchitecture.getInstance().getAppliedRuleById(appliedRuleId).isEnabled();
 	}
 
-	public AppliedRule getAppliedRuleById(long appliedRuleId) {
+	public AppliedRuleStrategy getAppliedRuleById(long appliedRuleId) {
 		return SoftwareArchitecture.getInstance().getAppliedRuleById(appliedRuleId);
+	}
+	
+	public String[][] getCategories(){
+		return ruleFactory.getCategories();
 	}
 
 
 	/** 
 	 * Domain checks
 	 */
-	public boolean isDuplicate(AppliedRule rule){
-		AppliedRule[] appliedRules = getAppliedRules(false);
-		for(AppliedRule appliedRule : appliedRules){
+	public boolean checkConventions(AppliedRuleStrategy appliedRule){
+		return appliedRule.checkConvention();
+	}
+	
+	public boolean isDuplicate(AppliedRuleStrategy rule){
+		AppliedRuleStrategy[] appliedRules = getAppliedRules(false);
+		for(AppliedRuleStrategy appliedRule : appliedRules){
 			if(rule.equals(appliedRule)){
 				return true;
 			}
 		}
 		return false;
 	}
+
 }

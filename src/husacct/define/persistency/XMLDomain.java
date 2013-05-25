@@ -1,16 +1,18 @@
 package husacct.define.persistency;
 
 import husacct.define.domain.Application;
-import husacct.define.domain.AppliedRule;
 import husacct.define.domain.Project;
 import husacct.define.domain.SoftwareArchitecture;
 import husacct.define.domain.SoftwareUnitDefinition;
 import husacct.define.domain.SoftwareUnitDefinition.Type;
-import husacct.define.domain.module.Component;
-//import husacct.define.domain.module.ExternalSystem;
-import husacct.define.domain.module.Layer;
-import husacct.define.domain.module.Module;
-import husacct.define.domain.module.SubSystem;
+import husacct.define.domain.appliedrules.AppliedRuleFactory;
+import husacct.define.domain.appliedrules.AppliedRuleStrategy;
+import husacct.define.domain.module.ModuleFactory;
+import husacct.define.domain.module.ModuleStrategy;
+import husacct.define.domain.module.modules.Component;
+import husacct.define.domain.module.modules.ExternalLibrary;
+import husacct.define.domain.module.modules.Layer;
+import husacct.define.domain.module.modules.SubSystem;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,9 +20,13 @@ import java.util.List;
 
 import org.jdom2.Element;
 
+import com.sun.xml.internal.ws.api.server.Module;
+
+
 public class XMLDomain {
 
 	private Element workspace;
+	private ModuleFactory moduleFactory = new ModuleFactory();
 
 	public XMLDomain(Element workspaceData) {
 		this.workspace = workspaceData;
@@ -74,10 +80,6 @@ public class XMLDomain {
 		return project;
 	}
 	
-	private String getFilePath(String path) {
-		return path.replace("\"", "\\");
-	}
-
 	public SoftwareArchitecture getArchitecture() {
 		List<Element> applicationProperties = this.getWorkspaceChildren();
 		Element ApArchitecture = (Element)applicationProperties.get(3);
@@ -105,16 +107,11 @@ public class XMLDomain {
     	XMLArchitecture.setAppliedRules(this.getAppliedRules(ApArchitecture));
     	return XMLArchitecture;
 	}
-	/*
-	public ArrayList<AppliedRule> getAppliedRules() {
-		List<Element> applicationProperties = this.getWorkspaceChildren();
-		return this.getAppliedRules((Element)applicationProperties.get(4));
-	}*/
 
 	@SuppressWarnings("rawtypes")
-	public ArrayList<AppliedRule> getAppliedRules(Element ApplicationArchitecture) {
+	public ArrayList<AppliedRuleStrategy> getAppliedRules(Element ApplicationArchitecture) {
 		Element AppliedRulesRoot = ApplicationArchitecture.getChild("rules");
-		ArrayList<AppliedRule> ruleList = new ArrayList<AppliedRule>();
+		ArrayList<AppliedRuleStrategy> ruleList = new ArrayList<AppliedRuleStrategy>();
 		
 		if (AppliedRulesRoot != null) {
     		List<Element> AppliedRules = AppliedRulesRoot.getChildren("AppliedRule");
@@ -132,8 +129,8 @@ public class XMLDomain {
 		return ruleList;
 	}
 
-	public ArrayList<Module> getModules(List<Element> modules) {		
-		ArrayList<Module> returnList = new ArrayList<Module>();
+	public ArrayList<ModuleStrategy> getModules(List<Element> modules) {		
+		ArrayList<ModuleStrategy> returnList = new ArrayList<ModuleStrategy>();
 
 		for (int i = 0; i < modules.size(); i++) {
 			Element theModule = (Element)modules.get(i);
@@ -144,15 +141,15 @@ public class XMLDomain {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public AppliedRule getAppliedRuleFromXML(Element e) {
+	public AppliedRuleStrategy getAppliedRuleFromXML(Element e) {
 		Element ruleDescription = e.getChild("description");
 		Element ruleRegex = e.getChild("regex");
 		Element ruleId = e.getChild("id");
 		Element ruleType = e.getChild("type");
 		Element ruleModuleFrom = e.getChild("moduleFrom").getChild("Module");
-		Module moduleFrom = ruleModuleFrom == null ? new Module() : this.getModuleFromXML(ruleModuleFrom);
+		ModuleStrategy moduleFrom = ruleModuleFrom == null ? moduleFactory.createDummy("Component") : this.getModuleFromXML(ruleModuleFrom);
 		Element ruleModuleTo = e.getChild("moduleTo").getChild("Module");
-		Module moduleTo = ruleModuleTo == null ? new Module() : this.getModuleFromXML(ruleModuleTo);
+		ModuleStrategy moduleTo = ruleModuleTo == null ? moduleFrom : this.getModuleFromXML(ruleModuleTo);
 		Element ruleExceptions = e.getChild("exceptions");
 		Element ruleEnabled = e.getChild("enabled");
 		Element ruleDependencies = e.getChild("dependencies");
@@ -168,13 +165,11 @@ public class XMLDomain {
 				}
 			}
 		}
+		boolean enabled = Boolean.parseBoolean(ruleEnabled.getValue());
 		
-		boolean enabled = true;
-		if (ruleEnabled.getValue().toLowerCase().equals("false")) {
-			enabled = false;
-		}
-		
-		AppliedRule AppliedXMLRule = new AppliedRule(ruleType.getValue(), ruleDescription.getValue(), dependencies.toArray(new String[dependencies.size()]), ruleRegex.getValue(), moduleFrom, moduleTo, enabled);
+		AppliedRuleFactory factory = new AppliedRuleFactory();
+		AppliedRuleStrategy AppliedXMLRule = factory.createRule(ruleType.getValue());
+		AppliedXMLRule.setAppliedRule(ruleDescription.getValue(), dependencies.toArray(new String[dependencies.size()]), ruleRegex.getValue(), moduleFrom, moduleTo, enabled);
 		AppliedXMLRule.setId(Integer.parseInt(ruleId.getValue()));
 		
 		if (ruleExceptions != null) {
@@ -196,30 +191,22 @@ public class XMLDomain {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Module getModuleFromXML(Element e) {
+	public ModuleStrategy getModuleFromXML(Element e) {
 		Element ModuleType = e.getChild("type");
-		String ModuleTypeText = ModuleType.getText().toLowerCase();
-		Module xmlModule;
+		String ModuleTypeText = ModuleType.getText();
+		ModuleStrategy xmlModule;
 
 		String moduleName = e.getChild("name").getValue();
 		String moduleDescription = e.getChild("description").getValue();
 		
 		String moduleId = e.getChild("id").getValue();
 
-		// type detection..
-		//if (ModuleTypeText.equals("externallibrary")) {
-			//xmlModule = new ExternalSystem(moduleName, moduleDescription);
-		//} 
-		if (ModuleTypeText.equals("component")) {
-			xmlModule = new Component(moduleName, moduleDescription);
-		} else if (ModuleTypeText.equals("layer")) {
-			xmlModule = new Layer(moduleName, moduleDescription, Integer.parseInt(e.getChild("HierarchicalLevel").getValue()));
-		} else if (ModuleTypeText.equals("subsystem")) {
-			xmlModule = new SubSystem(moduleName, moduleDescription);
-		} else {
-			xmlModule = new Module(moduleName, moduleDescription);
-		}
+		xmlModule = moduleFactory.createModule(ModuleTypeText);
+		xmlModule.set(moduleName, moduleDescription);
 		xmlModule.setId(Long.parseLong(moduleId));
+		if(ModuleTypeText.equals("Layer")){
+			((Layer)xmlModule).setHierarchicalLevel(Integer.parseInt(e.getChild("HierarchicalLevel").getValue()));
+		}		
 
 		Element SoftwareUnitDefinitions = e.getChild("SoftwareUnitDefinitions");
 		if (SoftwareUnitDefinitions != null) {

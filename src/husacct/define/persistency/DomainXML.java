@@ -1,12 +1,12 @@
 package husacct.define.persistency;
 
 import husacct.define.domain.Application;
-import husacct.define.domain.AppliedRule;
 import husacct.define.domain.Project;
 import husacct.define.domain.SoftwareArchitecture;
 import husacct.define.domain.SoftwareUnitDefinition;
-import husacct.define.domain.module.Layer;
-import husacct.define.domain.module.Module;
+import husacct.define.domain.appliedrules.AppliedRuleStrategy;
+import husacct.define.domain.module.ModuleStrategy;
+import husacct.define.domain.module.modules.Layer;
 
 import org.jdom2.Element;
 
@@ -55,7 +55,7 @@ public class DomainXML {
 
 		if (this.domainSoftwareArchitecture.getModules().size() > 0) {
 			Element SAModules = new Element("modules");
-			for (Module m : this.domainSoftwareArchitecture.getModules()) {
+			for (ModuleStrategy m : this.domainSoftwareArchitecture.getModules()) {
 				SAModules.addContent(this.getModuleInXML(m));
 			}
 			XMLArchitecture.addContent(SAModules);
@@ -63,7 +63,7 @@ public class DomainXML {
 
 		if (this.domainSoftwareArchitecture.getAppliedRules().size() > 0) {
 			Element SARules = new Element("rules");
-			for (AppliedRule ar : this.domainSoftwareArchitecture.getAppliedRules()) {
+			for (AppliedRuleStrategy ar : this.domainSoftwareArchitecture.getAppliedRules()) {
 				SARules.addContent(this.getAppliedRuleInXML(ar));
 			}
 			XMLArchitecture.addContent(SARules);
@@ -72,7 +72,7 @@ public class DomainXML {
 		return XMLArchitecture;
 	}
 
-	public Element getModuleInXML(Module module) {
+	public Element getModuleInXML(ModuleStrategy module) {
 		Element xmlModule = new Element("Module");
 
 		Element moduleType = new Element("type");
@@ -116,7 +116,7 @@ public class DomainXML {
 		 */
 		if (module.getSubModules().size() > 0) {
 			Element subModule = new Element("SubModules");
-			for (Module m : module.getSubModules()) {
+			for (ModuleStrategy m : module.getSubModules()) {
 				subModule.addContent(this.getModuleInXML(m));	
 			}
 			xmlModule.addContent(subModule);
@@ -141,7 +141,7 @@ public class DomainXML {
 		return XMLPath;
 	}
 
-	public Element getAppliedRuleInXML(AppliedRule AR) {
+	public Element getAppliedRuleInXML(AppliedRuleStrategy AR) {
 		Element XMLAppliedRule = new Element("AppliedRule");
 
 		Element ruleRegex = new Element("regex");
@@ -167,18 +167,14 @@ public class DomainXML {
 		Element ruleType = new Element("type");
 		ruleType.addContent(AR.getRuleType());
 		XMLAppliedRule.addContent(ruleType);
+		
+		Element moduleFrom = new Element("moduleFrom");
+		moduleFrom.addContent(this.getModuleInXML(AR.getModuleFrom()));
+		XMLAppliedRule.addContent(moduleFrom);
 
-		if (AR.getModuleFrom() instanceof Module) {
-			Element moduleFrom = new Element("moduleFrom");
-			moduleFrom.addContent(this.getModuleInXML(AR.getModuleFrom()));
-			XMLAppliedRule.addContent(moduleFrom);
-		}
-
-		if (AR.getModuleTo() instanceof Module) {
-			Element moduleTo = new Element("moduleTo");
-			moduleTo.addContent(this.getModuleInXML(AR.getModuleTo()));
-			XMLAppliedRule.addContent(moduleTo);
-		}
+		Element moduleTo = new Element("moduleTo");
+		moduleTo.addContent(this.getModuleInXML(AR.getModuleTo()));
+		XMLAppliedRule.addContent(moduleTo);
 
 		Element dependencies = new Element("dependencies");
 		if (AR.getDependencies().length > 0) {
@@ -192,7 +188,7 @@ public class DomainXML {
 
 		if (AR.getExceptions().size() > 0) {
 			Element ruleExceptions = new Element("exceptions");
-			for (AppliedRule ap : AR.getExceptions()) {
+			for (AppliedRuleStrategy ap : AR.getExceptions()) {
 				ruleExceptions.addContent(this.getAppliedRuleInXML(ap));
 			}
 			XMLAppliedRule.addContent(ruleExceptions);

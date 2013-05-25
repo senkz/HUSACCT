@@ -1,84 +1,72 @@
 package husacct.define.task.conventions_checker;
 
+import husacct.define.domain.module.ModuleStrategy;
+import husacct.define.domain.module.modules.Layer;
+
 import java.util.ArrayList;
 
-import husacct.define.domain.module.Layer;
-import husacct.define.domain.module.Module;
-
 public class RuleConventionsChecker {
-	private Module moduleFrom;
-	private Module moduleTo;
+	private ModuleStrategy moduleFrom;
+	private ModuleStrategy moduleTo;
 	private String ruleTypeKey;
+	private boolean alreadyExists;
 	
 	private ModuleCheckerHelper moduleCheckerHelper;
 	private LayerCheckerHelper layerCheckerHelper;
 	
-	public RuleConventionsChecker(Module moduleFrom, Module moduleTo, String ruleTypeKey) {
+	public RuleConventionsChecker(ModuleStrategy moduleFrom, ModuleStrategy moduleTo, String ruleTypeKey, boolean alreadyExists) {
 		this.setModuleFrom(moduleFrom);
 		this.setModuleTo(moduleTo);
 		this.setRuleTypeKey(ruleTypeKey);
 		this.moduleCheckerHelper = new ModuleCheckerHelper();
 		this.layerCheckerHelper = new LayerCheckerHelper(moduleTo);
+		this.alreadyExists = alreadyExists;
 	}
+	
 	
 	public boolean checkRuleConventions() {
 		boolean conventionCheckSucces = true;
-		if(ruleTypeKey.equals("VisibilityConvention")) {
-			conventionCheckSucces = checkVisibilityConvention();
-		} else if(ruleTypeKey.equals("NamingConvention")) {
-			conventionCheckSucces = checkNamingConvention();
-		} else if(ruleTypeKey.equals("SubClassConvention")) {
-			conventionCheckSucces = checkSubClassConvention();
-		} else if(ruleTypeKey.equals("InterfaceConvention")) {
-			conventionCheckSucces = checkInterfaceConvention();
-		} else if(ruleTypeKey.equals("IsNotAllowedToUse")) {
-			conventionCheckSucces = checkIsNotAllowedToUse();
-		} else if(ruleTypeKey.equals("IsOnlyAllowedToUse")) {
-			conventionCheckSucces = checkIsOnlyAllowedToUse();
-		} else if(ruleTypeKey.equals("IsOnlyModuleAllowedToUse")) {
-			conventionCheckSucces = checkIsOnlyModuleAllowedToUse();
-		} else if(ruleTypeKey.equals("IsAllowedToUse")) {
-			conventionCheckSucces = checkIsAllowedToUse();
-		} else if(ruleTypeKey.equals("MustUse")) {
-			conventionCheckSucces = checkMustUse();
-		} else if(ruleTypeKey.equals("IsNotAllowedToMakeSkipCall")) {
-			conventionCheckSucces = checkSkipCall();
-		} else if(ruleTypeKey.equals("IsNotAllowedToMakeBackCall")) {
-			conventionCheckSucces = checkBackCall();
-		}
-		return conventionCheckSucces;
+		if(alreadyExists){
+			return conventionCheckSucces;
+		}else{
+			conventionCheckSucces = moduleCheckerHelper.checkRuleTypeAlreadySet(ruleTypeKey, moduleFrom);
+			return conventionCheckSucces;
+		}	
+//		if(ruleTypeKey.equals("SubClassConvention")) {
+//			conventionCheckSucces = checkSubClassConvention();
+//		} else if(ruleTypeKey.equals("InterfaceConvention")) {
+//			conventionCheckSucces = checkInterfaceConvention();
+//		} else if(ruleTypeKey.equals("IsNotAllowedToUse")) {
+//			conventionCheckSucces = checkIsNotAllowedToUse();
+//		} else if(ruleTypeKey.equals("IsOnlyAllowedToUse")) {
+//			conventionCheckSucces = checkIsOnlyAllowedToUse();
+//		} else if(ruleTypeKey.equals("IsOnlyModuleAllowedToUse")) {
+//			conventionCheckSucces = checkIsOnlyModuleAllowedToUse();
+//		} else if(ruleTypeKey.equals("IsAllowedToUse")) {
+//			conventionCheckSucces = checkIsAllowedToUse();
+//		} else if(ruleTypeKey.equals("MustUse")) {
+//			conventionCheckSucces = checkMustUse();
+//		} else if(ruleTypeKey.equals("IsNotAllowedToMakeSkipCall")) {
+//			conventionCheckSucces = checkSkipCall();
+//		} else if(ruleTypeKey.equals("IsNotAllowedToMakeBackCall")) {
+//			conventionCheckSucces = checkBackCall();
+//		}
 	}
 	
-	private boolean checkVisibilityConvention() {
-		boolean visibilityConventionSucces = moduleCheckerHelper.checkRuleTypeAlreadySet(ruleTypeKey, moduleFrom);
-		return visibilityConventionSucces;
-	}
 	
-	private boolean checkNamingConvention() {
-		boolean namingConventionSucces = moduleCheckerHelper.checkRuleTypeAlreadySet(ruleTypeKey, moduleFrom);
-		return namingConventionSucces;
-	}
 	
 	/**
 	 * checks are the same as MustUse
 	 */
 	private boolean checkSubClassConvention() {
-		boolean subClassConventionSucces = moduleCheckerHelper.checkRuleTypeAlreadySet(ruleTypeKey, moduleFrom);
-		if(subClassConventionSucces) {
-			subClassConventionSucces = checkMustUse();
-		}
-		return subClassConventionSucces;
+		return checkMustUse();
 	}
 	
 	/**
 	 * checks are the same as MustUse
 	 */
 	private boolean checkInterfaceConvention() {
-		boolean interfaceConventionSucces = moduleCheckerHelper.checkRuleTypeAlreadySet(ruleTypeKey, moduleFrom);
-		if(interfaceConventionSucces) {
-			interfaceConventionSucces = checkMustUse();
-		}
-		return interfaceConventionSucces;
+		return checkMustUse();
 	}
 	
 	private boolean checkIsNotAllowedToUse() {
@@ -270,19 +258,19 @@ public class RuleConventionsChecker {
 		return backCallSucces;
 	}
 	
-	public Module getModuleTo() {
+	public ModuleStrategy getModuleTo() {
 		return moduleTo;
 	}
 
-	public void setModuleTo(Module moduleTo) {
+	public void setModuleTo(ModuleStrategy moduleTo) {
 		this.moduleTo = moduleTo;
 	}
 
-	public Module getModuleFrom() {
+	public ModuleStrategy getModuleFrom() {
 		return moduleFrom;
 	}
 
-	public void setModuleFrom(Module moduleFrom) {
+	public void setModuleFrom(ModuleStrategy moduleFrom) {
 		this.moduleFrom = moduleFrom;
 	}
 

@@ -6,10 +6,9 @@ import husacct.common.dto.ProjectDTO;
 import husacct.common.dto.RuleDTO;
 import husacct.common.services.ObservableService;
 import husacct.define.domain.Application;
-import husacct.define.domain.AppliedRule;
-import husacct.define.domain.Project;
 import husacct.define.domain.SoftwareArchitecture;
-import husacct.define.domain.module.Module;
+import husacct.define.domain.appliedrules.AppliedRuleStrategy;
+import husacct.define.domain.module.ModuleStrategy;
 import husacct.define.domain.services.AppliedRuleDomainService;
 import husacct.define.domain.services.AppliedRuleExceptionDomainService;
 import husacct.define.domain.services.ModuleDomainService;
@@ -67,14 +66,14 @@ public class DefineServiceImpl extends ObservableService implements IDefineServi
 	
 	@Override 
 	public ModuleDTO[] getRootModules() {	
-		Module[] modules = this.moduleService.getRootModules();
+		ModuleStrategy[] modules = this.moduleService.getRootModules();
 		ModuleDTO[] moduleDTOs = domainParser.parseRootModules(modules);
 		return moduleDTOs;
 	}
 	
 	@Override
 	public RuleDTO[] getDefinedRules() {
-		AppliedRule[] rules = this.appliedRuleService.getAppliedRules();
+		AppliedRuleStrategy[] rules = this.appliedRuleService.getAppliedRules();
 		RuleDTO[] ruleDTOs = domainParser.parseRules(rules);
 		return ruleDTOs;
 	}
@@ -85,7 +84,7 @@ public class DefineServiceImpl extends ObservableService implements IDefineServi
 		if (logicalPath.equals("**")){
 			childModuleDTOs = getRootModules();
 		} else {
-			Module module = this.moduleService.getModuleByLogicalPath(logicalPath);
+			ModuleStrategy module = this.moduleService.getModuleByLogicalPath(logicalPath);
 			ModuleDTO moduleDTO = domainParser.parseModule(module);
 			childModuleDTOs = moduleDTO.subModules;			
 		}
@@ -161,8 +160,8 @@ public class DefineServiceImpl extends ObservableService implements IDefineServi
 	@Override
 	public boolean isMapped() {
 		boolean isMapped = false;
-		ArrayList<Module> modules = SoftwareArchitecture.getInstance().getModules();
-		for (Module module : modules){	
+		ArrayList<ModuleStrategy> modules = SoftwareArchitecture.getInstance().getModules();
+		for (ModuleStrategy module : modules){	
 			if (module.isMapped()){
 				isMapped = true;
 			}

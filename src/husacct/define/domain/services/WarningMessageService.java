@@ -1,6 +1,6 @@
 package husacct.define.domain.services;
 
-import husacct.define.domain.module.Module;
+import husacct.define.domain.module.ModuleStrategy;
 import husacct.define.domain.warningmessages.CodeLevelWarning;
 import husacct.define.domain.warningmessages.ImplementationLevelWarning;
 import husacct.define.domain.warningmessages.WarningMessage;
@@ -88,7 +88,7 @@ public class WarningMessageService extends Observable implements Observer {
 		return haswarning;
 	}
 
-	public void processModule(Module module){
+	public void processModule(ModuleStrategy module){
 		if (module.isMapped()){
 			chekIfImplementationWarningExist(module);
 		} else {
@@ -97,7 +97,7 @@ public class WarningMessageService extends Observable implements Observer {
 	}
 
 
-	private void chekIfImplementationWarningExist(Module module) {
+	private void chekIfImplementationWarningExist(ModuleStrategy module) {
 		for (WarningMessage warning : warnings) {
 			if(warning instanceof ImplementationLevelWarning){
 				Long idOfWarningModule = ((ImplementationLevelWarning)warning).getModule().getId();
@@ -112,7 +112,7 @@ public class WarningMessageService extends Observable implements Observer {
 	}
 
 
-	private void createModuleWarning(Module module) {
+	private void createModuleWarning(ModuleStrategy module) {
 		ImplementationLevelWarning warning = new ImplementationLevelWarning(module);
 		warnings.add(warning);
 		notifyAllObservers(this,"create Module");

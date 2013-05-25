@@ -1,16 +1,15 @@
 package husacct.define.presentation.jpanel.ruledetails.contentsmodule;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.HashMap;
-
-import husacct.define.domain.module.Module;
 import husacct.define.presentation.jpanel.ruledetails.AbstractDetailsJPanel;
 import husacct.define.presentation.jpanel.ruledetails.components.DescriptionPanelComponent;
 import husacct.define.presentation.jpanel.ruledetails.components.EnabledPanelComponent;
 import husacct.define.presentation.jpanel.ruledetails.components.ModuleFromPanelComponent;
 import husacct.define.task.AppliedRuleController;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.HashMap;
 
 public class FacadeConventionRuleJPanel  extends AbstractDetailsJPanel{
 
@@ -63,7 +62,6 @@ public static final String ruleTypeKey = "FacadeConvention";
 	public void updateDetails(HashMap<String, Object> ruleDetails) {
 		super.updateDetails(ruleDetails);
 		moduleFromPanelComponent.update(ruleDetails.get("moduleFromId"));
-		//moduleToPanelComponent.update(ruleDetails.get("moduleToId"));
 		enabledPanelComponent.update(ruleDetails.get("enabled"));
 		descriptionPanelComponent.update(ruleDetails.get("description"));
 	}
@@ -73,7 +71,7 @@ public static final String ruleTypeKey = "FacadeConvention";
 		HashMap<String, Object> ruleDetails = super.saveToHashMap();
 		
 		ruleDetails.put("moduleFromId", this.moduleFromPanelComponent.getValue());
-		ruleDetails.put("moduleToId", new Module());
+		ruleDetails.put("moduleToId", this.moduleFromPanelComponent.getValue());
 		ruleDetails.put("enabled", (Boolean) this.enabledPanelComponent.getValue());
 		ruleDetails.put("description", (String) this.descriptionPanelComponent.getValue());
 		
