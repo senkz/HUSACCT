@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observer;
 
+import org.apache.log4j.Category;
+
 public class AppliedRuleController extends PopUpController {
 
     private AppliedRuleExceptionDomainService appliedRuleExceptionService;
@@ -162,72 +164,48 @@ public class AppliedRuleController extends PopUpController {
 	}
     }
 
-    /**
-     * Load Data
-     */
     public void fillRuleTypeComboBox(KeyValueComboBox keyValueComboBoxAppliedRule) {
-	/**
-	 * TODO: Validate needs to fix their service, getCategories() returns 0 at normal boot (no bootstrapper)
-	 */
-	//		CategoryDTO[] categories = ServiceProvider.getInstance().getValidateService().getCategories();
-	//		ArrayList<String> ruleTypeKeys = new ArrayList<String>();
-	//		ArrayList<String> ruleTypeValues = new ArrayList<String>();
-	//		
-	//		for (CategoryDTO categorie : categories) {
-	//			ruleTypeKeys.add("setDisabled");
-	//			String categoryName = (categories[0].equals(categorie))? "--- Property rule types ---" : "--- Relation rule types ---";
-	//			ruleTypeValues.add(categoryName);
-	//			RuleTypeDTO[] ruleTypes = categorie.ruleTypes;
-	//
-	//			Module selectedModule = this.moduleService.getModuleById(DefinitionController.getInstance().getSelectedModuleId());
-	//			for (RuleTypeDTO ruleTypeDTO : ruleTypes){
-	//				try {
-	//					if(!(selectedModule instanceof Layer)  && (ruleTypeDTO.key.contains("SkipCall") || ruleTypeDTO.key.contains("BackCall"))) {
-	//						continue;
-	//					} else {
-	//						String value = ServiceProvider.getInstance().getLocaleService().getTranslatedString(ruleTypeDTO.key);
-	//						ruleTypeKeys.add(ruleTypeDTO.key);
-	//						ruleTypeValues.add(value);
-	//					}
-	//				} catch(MissingResourceException e){
-	//					ruleTypeValues.add(ruleTypeDTO.key);
-	//					logger.info("Key not found in resourcebundle: " + ruleTypeDTO.key);
-	//				}
-	//			}
-	//		}
-	//		keyValueComboBoxAppliedRule.setModel(ruleTypeKeys.toArray(), ruleTypeValues.toArray());
-	//		keyValueComboBoxAppliedRule.setSelectedIndex(1);
-
-	String[][] categories = appliedRuleService.getCategories();
-	ArrayList<String> ruleTypeKeys = new ArrayList<String>();
-	ArrayList<String> ruleTypeValues = new ArrayList<String>();
-
-	Module selectedModule = this.moduleService.getModuleById(DefinitionController.getInstance().getSelectedModuleId());
-	for(String[] category : categories){
-	    if(category[0].equals("IsNotAllowedToUse"))
-	    {
-	    	ruleTypeKeys.add("setDisabled");
-	    	ruleTypeValues.add("--- Relation rule types ---");
-	    }
-	    else
-	    {
-	    	ruleTypeKeys.add("setDisabled");
-	    	ruleTypeValues.add("--- Property rule types ---");
-	    }
-	    for(String ruleType : category){
-		if(!(selectedModule instanceof Layer)  && (ruleType.contains("SkipCall") || ruleType.contains("BackCall"))) {
-		    continue;
-		}else{
-		    ruleTypeKeys.add(ruleType);
-		    ruleTypeValues.add(ServiceProvider.getInstance().getLocaleService().getTranslatedString(ruleType));
-		}
-	    }	
-	}
-
-	keyValueComboBoxAppliedRule.setModel(ruleTypeKeys.toArray(), ruleTypeValues.toArray());
-	keyValueComboBoxAppliedRule.setSelectedIndex(1);
+    		Module selectedModule = this.moduleService.getModuleById(DefinitionController.getInstance().getSelectedModuleId());
+			
+			ArrayList<String> ruleTypeKeys = new ArrayList<String>();
+			ArrayList<String> ruleTypeValues = new ArrayList<String>();
+			
+    		CategoryDTO[] rulesCategory = ServiceProvider.getInstance().getValidateService().getCategories();
+			RuleTypeDTO[] allowedRules = ServiceProvider.getInstance().getValidateService().getAllowedRuleTypesOfModule(selectedModule.getType());
+			
+			for (CategoryDTO category: rulesCategory)
+			{
+				ArrayList<RuleTypeDTO> _temp = new ArrayList<RuleTypeDTO>();
+				for (RuleTypeDTO categoryRule : category.getRuleTypes())
+				{
+					for (RuleTypeDTO allowedRule : allowedRules)
+					{
+						if (categoryRule.getKey().equals(allowedRule.getKey()))
+						{
+							_temp.add(categoryRule);
+						}
+					}			
+				}
+				if (!_temp.isEmpty())
+				{
+			    	ruleTypeKeys.add("setDisabled");
+			    	ruleTypeValues.add("--- "+ category.key +" ---");
+			    	
+			    	for (RuleTypeDTO rule : _temp)
+			    	{
+				    	String value = ServiceProvider.getInstance().getLocaleService().getTranslatedString(rule.key);
+			    		ruleTypeKeys.add(rule.key);
+						ruleTypeValues.add(value);
+			    	}
+				}
+			}
+			
+			keyValueComboBoxAppliedRule.setModel(ruleTypeKeys.toArray(), ruleTypeValues.toArray());
+			keyValueComboBoxAppliedRule.setSelectedIndex(1);
     }
 
+
+    
     public void fillRuleTypeComboBoxWithExceptions(
 	    KeyValueComboBox keyValueComboBoxAppliedRule) {
 	CategoryDTO[] categories = ServiceProvider.getInstance()
