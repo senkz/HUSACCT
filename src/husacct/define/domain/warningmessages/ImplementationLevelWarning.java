@@ -1,30 +1,46 @@
 package husacct.define.domain.warningmessages;
 
-import husacct.define.domain.module.Module;
+import husacct.define.domain.module.ModuleStrategy;
+
+import java.util.Observable;
+
+
 
 public class ImplementationLevelWarning extends WarningMessage {
 
-    private Module module;
+	private ModuleStrategy module;
 
-    public ImplementationLevelWarning(Module module) {
-	this.module = module;
-	generateMessage();
-    }
+	public ModuleStrategy getModule() {
+		return module;
+	}
 
-    @Override
-    public void generateMessage() {
-	description = "A module must be mapped to an implementation unit";
-	resource = "Module name: " + module.getName();
-	type = "Implentation Level";
-	location = "";
-    }
+	public void setModule(ModuleStrategy module) {
+		this.module = module;
+	}
 
-    public Module getModule() {
-	return module;
-    }
+	public ImplementationLevelWarning(ModuleStrategy module) {
+		this.module = module;
+		generateMessage();
+	}
 
-    public void setModule(Module module) {
-	this.module = module;
-    }
+	@Override
+	public void generateMessage() {
+		this.description = "A module must be mapped to an implementation unit";
+		this.resource = "Module name: " + module.getName();
+		this.type = "Implentation Level";
+		this.location = "";
 
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Object[] getValue() {
+		// TODO Auto-generated method stub
+		return new Object[]{module};
+	}
 }

@@ -3,6 +3,7 @@ package husacct.define.presentation.jpanel;
 import husacct.ServiceProvider;
 import husacct.common.services.IServiceListener;
 import husacct.control.presentation.util.DialogUtils;
+import husacct.define.domain.services.DomainGateway;
 import husacct.define.presentation.jdialog.AppliedRuleJDialog;
 import husacct.define.presentation.tables.JTableAppliedRule;
 import husacct.define.presentation.tables.JTableTableModel;
@@ -130,23 +131,22 @@ public class AppliedRulesJPanel extends JPanel implements ActionListener,
     }
 
     private void addRule() {
-	long moduleId = DefinitionController.getInstance()
-		.getSelectedModuleId();
-	if (moduleId != -1) {
-	    AppliedRuleJDialog appliedRuleFrame = new AppliedRuleJDialog(
-		    moduleId, -1L);
-	    DialogUtils.alignCenter(appliedRuleFrame);
-	    appliedRuleFrame.setVisible(true);
-
-	} else {
-	    // TODO Test popup
-	    JOptionPane.showMessageDialog(this,
-		    ServiceProvider.getInstance().getLocaleService()
-			    .getTranslatedString("ModuleSelectionError"),
-		    ServiceProvider.getInstance().getLocaleService()
-			    .getTranslatedString("WrongSelectionTitle"),
-		    JOptionPane.ERROR_MESSAGE);
-	}
+	long moduleId = DomainGateway.getInstance().getSelectedModuleId();
+		if (moduleId != -1) {
+		    AppliedRuleJDialog appliedRuleFrame = new AppliedRuleJDialog(
+			    moduleId, -1L);
+		    DialogUtils.alignCenter(appliedRuleFrame);
+		    appliedRuleFrame.setVisible(true);
+	
+		} else {
+		    // TODO Test popup
+		    JOptionPane.showMessageDialog(this,
+			    ServiceProvider.getInstance().getLocaleService()
+				    .getTranslatedString("ModuleSelectionError"),
+			    ServiceProvider.getInstance().getLocaleService()
+				    .getTranslatedString("WrongSelectionTitle"),
+			    JOptionPane.ERROR_MESSAGE);
+		}
     }
 
     private GridBagLayout createButtonPanelLayout() {
@@ -287,6 +287,7 @@ public class AppliedRulesJPanel extends JPanel implements ActionListener,
 		    selectedRules.add(datahelper.getId());
 		}
 	    }
+	    DomainGateway.getInstance().removeRules(selectedRules);
 	    DefinitionController.getInstance().removeRules(selectedRules);
 	}
     }
