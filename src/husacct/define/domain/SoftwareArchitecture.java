@@ -17,9 +17,6 @@ import java.util.List;
 public class SoftwareArchitecture {
 
 	private ModuleFactory factory = new ModuleFactory();
-
-	private static int counter = 0;
-
 	private static SoftwareArchitecture instance = null;
 
 	public static SoftwareArchitecture getInstance() {
@@ -174,6 +171,15 @@ public class SoftwareArchitecture {
 					.getLocaleService().getTranslatedString("NoModule"));
 		}
 		return currentModule;
+	}
+	
+	public ModuleStrategy getModuleByName(String name){
+		for(ModuleStrategy module : rootModule.getSubModules()){
+			if(module.getName().equalsIgnoreCase(name)){
+				return module;
+			}
+		}
+		return null;
 	}
 
 	public ModuleStrategy getModuleByLogicalPath(String logicalPath) {
@@ -577,7 +583,7 @@ public class SoftwareArchitecture {
 				oldModule, newType);
 		parent.addSubModule(index, updatedModule);
 
-		return oldModule;
+		return updatedModule;
 	}
 
 	public void removeAppliedRule(List<Long> selectedRules) {

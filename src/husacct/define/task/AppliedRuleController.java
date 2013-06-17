@@ -174,8 +174,10 @@ public class AppliedRuleController extends PopUpController {
 	/**
 	 * Load Data
 	 */
-	public void fillRuleTypeComboBox(
-			KeyValueComboBox keyValueComboBoxAppliedRule) {
+	public void fillRuleTypeComboBox(KeyValueComboBox keyValueComboBoxAppliedRule) {
+		fillRuleTypeComboBox(keyValueComboBoxAppliedRule, false);
+	}
+	public void fillRuleTypeComboBox(KeyValueComboBox keyValueComboBoxAppliedRule, boolean update) {
 		/**
 		 * TODO: Validate needs to fix their service, getCategories() returns 0
 		 * at normal boot (no bootstrapper)
@@ -220,9 +222,7 @@ public class AppliedRuleController extends PopUpController {
 		ArrayList<String> ruleTypeKeys = new ArrayList<String>();
 		ArrayList<String> ruleTypeValues = new ArrayList<String>();
 
-		ModuleStrategy selectedModule = this.moduleService
-				.getModuleById(DefinitionController.getInstance()
-						.getSelectedModuleId());
+		ModuleStrategy selectedModule = this.moduleService.getModuleById(DefinitionController.getInstance().getSelectedModuleId());
 		for (String[] category : categories) {
 			if (categories[0][0].equals(category[0])) {
 				ruleTypeKeys.add("setDisabled");
@@ -232,11 +232,11 @@ public class AppliedRuleController extends PopUpController {
 				ruleTypeValues.add("--- Relation rule types ---");
 			}
 			for (String ruleType : category) {
-				if (!(selectedModule instanceof Layer)
-						&& (ruleType.contains("SkipCall") || ruleType
-								.contains("BackCall"))) {
+				if (!(selectedModule instanceof Layer) && (ruleType.contains("SkipCall") || ruleType.contains("BackCall"))) {
 					continue;
-				} else {
+				}else if((ruleType.contains("Facade") && !update)){
+					continue;
+				}else {
 					ruleTypeKeys.add(ruleType);
 					ruleTypeValues.add(ServiceProvider.getInstance()
 							.getLocaleService().getTranslatedString(ruleType));
