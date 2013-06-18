@@ -1,9 +1,10 @@
 package husacct.define.domain.module.modules;
 
-import husacct.define.domain.SoftwareUnitDefinition;
+
 import husacct.define.domain.SoftwareUnitRegExDefinition;
 import husacct.define.domain.module.ModuleFactory;
 import husacct.define.domain.module.ModuleStrategy;
+import husacct.define.domain.softwareunit.SoftwareUnitDefinition;
 
 import java.util.ArrayList;
 
@@ -14,12 +15,12 @@ public class Component extends ModuleStrategy {
 		STATIC_ID++;
 		this.name = name;
 		this.description = description;
-		this.type = "Module";
+		this.type = "Component";
 		this.mappedSUunits = new ArrayList<SoftwareUnitDefinition>();
 		this.mappedRegExSUunits = new ArrayList<SoftwareUnitRegExDefinition>();
 		this.subModules = new ArrayList<ModuleStrategy>();
 	    ModuleStrategy facade = new ModuleFactory().createModule("Facade");
-	    facade.set(name+"Facade","this is the Facade of your Component");
+	    facade.set("Facade<"+name+">","this is the Facade of your Component");
 	    this.subModules.add(facade);
 	}
 	
