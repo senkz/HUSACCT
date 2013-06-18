@@ -80,9 +80,9 @@ public class ModuleFromPanelComponent extends AbstractPanelComponent implements
 	this.add(moduleFromJLabel, gridBagConstraints);
 	gridBagConstraints.gridx++;
 	gridBagConstraints.fill = GridBagConstraints.BOTH;
-		//TODO! Refactor!
-	    this.add(createFromModuleScrollPane(), gridBagConstraints);
-    }
+	createFromModuleJLabel();
+	this.add(moduleFromJLabel, gridBagConstraints);
+	} 
 
     @Override
     public void initGUI() {
