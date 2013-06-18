@@ -68,7 +68,7 @@ public class IsAllowedToUseJPanel extends AbstractDetailsJPanel {
 	this.add(enabledPanelComponent, new GridBagConstraints(0, 2, 2, 1, 0.0,
 		0.0, GridBagConstraints.FIRST_LINE_START,
 		GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-
+	
 	descriptionPanelComponent = new DescriptionPanelComponent();
 	this.add(descriptionPanelComponent, new GridBagConstraints(0, 3, 2, 1,
 		0.0, 0.0, GridBagConstraints.FIRST_LINE_START,
