@@ -30,11 +30,14 @@ public class IsAllowedToUseJPanel extends AbstractDetailsJPanel {
 	GridBagLayout ruleDetailsLayout = new GridBagLayout();
 	ruleDetailsLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0 };
 	// max total height = 290
-	if (!isException) {
-	    ruleDetailsLayout.rowHeights = new int[] { 30, 150, 30, 90 };
-	} else {
-	    ruleDetailsLayout.rowHeights = new int[] { 150, 150, 30, 90 };
-	}
+//	if (!isException) {
+//	    ruleDetailsLayout.rowHeights = new int[] { 30, 150, 30, 90 };
+//	} else {
+//	    ruleDetailsLayout.rowHeights = new int[] { 150, 150, 30, 90 };
+//	}
+	
+	ruleDetailsLayout.rowHeights = new int[] { 30, 150, 30, 90 };
+	
 	ruleDetailsLayout.columnWeights = new double[] { 0.0, 0.0 };
 	ruleDetailsLayout.columnWidths = new int[] { 130, 660 };
 	return ruleDetailsLayout;
