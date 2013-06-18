@@ -33,40 +33,6 @@ public class DefaultRuleDomainService {
 		defaultRuleTypeDTOs = ServiceProvider.getInstance().getValidateService().getDefaultRuleTypesOfModule(_module.getType());
 	}
 
-	public RuleTypeDTO[] dirtyHack(String moduleType) {
-		ArrayList<RuleTypeDTO> returnhack = new ArrayList<RuleTypeDTO>();
-		switch (moduleType) {
-		case "SubSystem":
-			;
-			break;
-		case "Layer":
-			returnhack
-					.add(new RuleTypeDTO(
-							"IsNotAllowedToMakeSkipCall",
-							"A layer should not access other layers other than the adjectent below",
-							null, null));
-			returnhack
-					.add(new RuleTypeDTO("IsNotAllowedToMakeBackCall",
-							"A layer should not access other layers above",
-							null, null));
-			break;
-		case "Component":
-			// returnhack.add(new RuleTypeDTO("VisibilityConvention",
-			// "",null,null));
-			// returnhack.add(new RuleTypeDTO("FacadeConvention",
-			// "",null,null));
-			break;
-		case "ExternalLibrary":
-			returnhack.add(new RuleTypeDTO("VisibilityConvention", "", null,
-					null));
-
-		}
-
-		RuleTypeDTO[] _temp = new RuleTypeDTO[returnhack.size()];
-		_temp = returnhack.toArray(_temp);
-		return _temp;
-	}
-
 	private void generateRules() {
 		if (defaultRuleTypeDTOs.length > 0) {
 			for (RuleTypeDTO rule : defaultRuleTypeDTOs) {
@@ -79,7 +45,8 @@ public class DefaultRuleDomainService {
 		AppliedRuleStrategy newRule = factory.createRule(ruleType.getKey());
 		newRule.setAppliedRule(
 				"This is a default rule for this type of module.\n"
-						+ ruleType.getDescriptionKey(), _module, _module);
+						+  ServiceProvider.getInstance().getLocaleService()
+					    .getTranslatedString(ruleType.getDescriptionKey()), _module, _module);
 		newRule.setEnabled(true);
 		defaultRules.add(newRule);
 	}
