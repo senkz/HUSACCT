@@ -174,10 +174,9 @@ public class AppliedRuleController extends PopUpController {
 	/**
 	 * Load Data
 	 */
-	public void fillRuleTypeComboBox(
-			KeyValueComboBox keyValueComboBoxAppliedRule) {
+	public void fillRuleTypeComboBox(KeyValueComboBox keyValueComboBoxAppliedRule) {
 		    ModuleStrategy selectedModule = this.moduleService.getModuleById(DefinitionController.getInstance().getSelectedModuleId());
-		       
+		       int index = 1;
 		       ArrayList<String> ruleTypeKeys = new ArrayList<String>();
 		       ArrayList<String> ruleTypeValues = new ArrayList<String>();
 		       
@@ -205,14 +204,19 @@ public class AppliedRuleController extends PopUpController {
 		             for (RuleTypeDTO rule : _temp)
 		             {
 		               String value = ServiceProvider.getInstance().getLocaleService().getTranslatedString(rule.key);
-		               ruleTypeKeys.add(rule.key);
+		               ruleTypeKeys.add(rule.getKey());
 		               ruleTypeValues.add(value);
+		               
+//		               if (currentRuleType.equals(rule.getKey()))
+//		               {
+//		            	   index = ruleTypeKeys.size() - 1; 
+//		               }
 		             }
 		         }
 		       }
 		       
 		       keyValueComboBoxAppliedRule.setModel(ruleTypeKeys.toArray(), ruleTypeValues.toArray());
-		       keyValueComboBoxAppliedRule.setSelectedIndex(1);
+		       keyValueComboBoxAppliedRule.setSelectedIndex(index);
 		      }
 
 	public void fillRuleTypeComboBoxWithExceptions(
@@ -594,3 +598,4 @@ public class AppliedRuleController extends PopUpController {
 	}
 
 }
+

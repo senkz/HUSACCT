@@ -30,7 +30,10 @@ public class DefaultRuleDomainService {
 	}
 
 	private void retrieveRuleTypeDTOsByModule() {
-		defaultRuleTypeDTOs = ServiceProvider.getInstance().getValidateService().getDefaultRuleTypesOfModule(_module.getType());
+		if(!_module.getType().equals("Root")){
+			defaultRuleTypeDTOs = ServiceProvider.getInstance().getValidateService().getDefaultRuleTypesOfModule(_module.getType());
+			// When not bootstrapping, service returns nothing.
+		}		
 	}
 
 	private void generateRules() {
@@ -97,20 +100,18 @@ public class DefaultRuleDomainService {
 	public void removeDefaultRules(ModuleStrategy module) {
 		_module = module;
 		retrieveRuleTypeDTOsByModule();
+
 		ArrayList<Long> appliedRuleIds = new ArrayList<>();
 		if (defaultRuleTypeDTOs.length > 0) {
 			for (RuleTypeDTO rule : defaultRuleTypeDTOs) {
-				for (AppliedRuleStrategy appliedRule : SoftwareArchitecture
-						.getInstance().getAppliedRules()) {
-					if (appliedRule.getModuleFrom().getId() == _module.getId()
-							&& rule.getKey().equals(appliedRule.getRuleType())) {
+				for (AppliedRuleStrategy appliedRule : SoftwareArchitecture.getInstance().getAppliedRules()) {
+					if (appliedRule.getModuleFrom().getId() == _module.getId()	&& rule.getKey().equals(appliedRule.getRuleType())) {
 						appliedRuleIds.add(appliedRule.getId());
 					}
 				}
 			}
 			for (Long appliedRuleid : appliedRuleIds) {
-				SoftwareArchitecture.getInstance().removeAppliedRule(
-						appliedRuleid);
+				SoftwareArchitecture.getInstance().removeAppliedRule(appliedRuleid);
 			}
 		}
 	}

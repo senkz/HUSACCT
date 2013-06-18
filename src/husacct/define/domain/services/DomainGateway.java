@@ -29,19 +29,10 @@ public class DomainGateway {
 		
 	}
 	
-	
-	
-	
-	
-	public boolean addModule(String name,String description,String type)
-	{
+	public boolean addModule(String name,String description,String type){
 		StateService.instance().fromGui();
-		DefinitionController.getInstance().addModule( name, description,type);
-		
-		
-		return true;
-		
-		
+		DefinitionController.getInstance().addModule( name, description,type);		
+		return true;		
 	}
 	
 	public void moveLayerUp(long layerId)
@@ -65,34 +56,18 @@ public class DomainGateway {
 		
 	}
 
-
-
-
-
 	public boolean saveAnalzedModule(ArrayList<AnalyzedModuleComponent> units) {
 	    long id= DefinitionController.getInstance().getSelectedModuleId();
 		SoftwareUnitController softwareUnitController = new SoftwareUnitController(id);
 		softwareUnitController.save(units);
-		
-		
-		
-		
 		return true;
 	}
-
-
-
-
 
 	public AnalyzedModuleComponent getRootModel() {
 	AnalyzedModuleComponent root=	StateService.instance().getRootModel();
 		JtreeController.instance().setTreeModel(root);
 		return root;
 	}
-
-
-
-
 
 	public void removeSoftwareUnits(List<String> selectedModules,
 			List<String> types) {
@@ -101,58 +76,33 @@ public class DomainGateway {
 		
 	}
 
-
-
-
-
 	public void removeModuleById(long moduleId) {
 		DefinitionController.getInstance().removeModuleById(moduleId);
 		
 	}
-
-
-
-
 
 	public void selectModule(long id) {
 		DefinitionController.getInstance().setSelectedModuleId(id);
 		
 	}
 
-
-
-
-
 	public void saveRegEx(ArrayList<AnalyzedModuleComponent> components,
 			String enteredRegEx) {
 		unitController = new SoftwareUnitController(getSelectedModuleId());
-		unitController.saveRegEx(components, enteredRegEx);
-		 
-		
+		unitController.saveRegEx(components, enteredRegEx);		
 	}
-
-
-
-
 
 	public long getSelectedModuleId() {
 		// TODO Auto-generated method stub
 		return DefinitionController.getInstance().getSelectedModuleId();
 	}
 
-
-
-
-
 	public void updateModule(String moduleName, String moduleDescription) {
-		
 		DefinitionController.getInstance().updateModule(moduleName, moduleDescription);
-		
 	}
-
-
-
-
+	public void updateFacade(String moduleName){
+		DefinitionController.getInstance().updateFacade(moduleName);
+	}
 
 	public void addException(HashMap<String, Object> ruleDetails) {
      long moduleId =(long) ruleDetails.get("moduleFromId");
@@ -160,30 +110,11 @@ public class DomainGateway {
 		
 	}
 
-
-
-
-
 	public void removeRules(List<Long> selectedRules) {
-		
-			SoftwareArchitecture.getInstance().removeAppliedRule(selectedRules);
-		
-		
-		
+		SoftwareArchitecture.getInstance().removeAppliedRule(selectedRules);
 	}
-
-
-
-
 
 	public AnalyzedModuleComponent treeModel() {
-		
 		return JtreeController.instance().getRootOfModel();
 	}
-	
-	
-	
-	
-	
-	
 }
