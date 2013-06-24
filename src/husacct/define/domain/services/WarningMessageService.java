@@ -35,7 +35,7 @@ public class WarningMessageService extends Observable implements Observer,IModul
 	
 	public WarningMessageService()
 	{
-		UndoRedoService.getInstance().registerObserver(this);
+		//UndoRedoService.getInstance().registerObserver(this);
 		
 	}
 	
@@ -346,6 +346,12 @@ for (AbstractCombinedComponent ab : list) {
 	public int sizeOfnotImplemented() {
 		
 		return warnings.size();
+	}
+
+	@Override
+	public void seperatedUpdateModuleType(ModuleStrategy oldmodule, ModuleStrategy newModule) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

@@ -8,6 +8,7 @@ import husacct.define.domain.module.ModuleFactory;
 import husacct.define.domain.module.ModuleStrategy;
 import husacct.define.domain.services.stateservice.StateService;
 
+
 import java.util.ArrayList;
 
 public class AppliedRuleExceptionDomainService {
@@ -76,7 +77,7 @@ public class AppliedRuleExceptionDomainService {
 	    long exceptionRuleId) {
 	AppliedRuleStrategy parentRule = SoftwareArchitecture.getInstance()
 		.getAppliedRuleById(parentRuleId);
-	StateService.instance().removeAppliedRuleExeption(parentRuleId,parentRule.getExeptionByID(exceptionRuleId));
+//	StateService.instance().removeAppliedRuleExeption(parentRuleId,parentRule.getExeptionByID(exceptionRuleId));
 	parentRule.removeExceptionById(exceptionRuleId);
 	ServiceProvider.getInstance().getDefineService()
 		.notifyServiceListeners();

@@ -37,12 +37,12 @@ public class DomainGateway {
 
 	public void moveLayerUp(long layerId) {
 		DefinitionController.getInstance().moveLayerUp(layerId);
-		StateService.instance().layerUp(layerId);
+	
 	}
 
 	public void moveLayerDown(long layerId) {
 		DefinitionController.getInstance().moveLayerDown(layerId);
-		StateService.instance().layerDown(layerId);
+		
 
 	}
 
@@ -113,7 +113,7 @@ public class DomainGateway {
 
 	public void removeRules(List<Long> selectedRules) {
 	
-		SoftwareArchitecture.getInstance().removeAppliedRule(selectedRules);
+		DefinitionController.getInstance().removeRules(selectedRules);
 	}
 
 	public AnalyzedModuleComponent treeModel() {

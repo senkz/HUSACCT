@@ -78,8 +78,8 @@ public class ApplicationJInternalFrame extends HelpableJInternalFrame implements
 
 	private void addToolBar() {
 		JSplitPane splitPane = new JSplitPane();
-		splitPane.setDividerLocation(300);
-		splitPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		 splitPane.setDividerLocation(300);
+         splitPane.setDividerLocation(365);
 
 		JToolBar toolBar = new JToolBar();
 		toolBar.setEnabled(false);
@@ -117,6 +117,13 @@ public class ApplicationJInternalFrame extends HelpableJInternalFrame implements
 			}
 		});
 
+		
+		
+
+		
+		
+		
+		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(warningButton);
 		buttonPanel.add(reportButton);
@@ -124,6 +131,7 @@ public class ApplicationJInternalFrame extends HelpableJInternalFrame implements
         buttonPanel.add(redoButton);
 		splitPane.add(buttonPanel, JSplitPane.LEFT);
 		splitPane.add(toolBar, JSplitPane.RIGHT);
+		getContentPane().add(splitPane, BorderLayout.SOUTH);
 		getContentPane().add(splitPane, BorderLayout.SOUTH);
 	}
 

@@ -16,17 +16,17 @@ public class UpdateModuleCommand implements Istate{
 	
 	@Override
 	public void undo() {
-		ModuleDomainService service = new ModuleDomainService();
-		service.updateModule(moduleId, oldModuleValue[0], oldModuleValue[1]);
-		ServiceProvider.getInstance().getDefineService().getDefinedGUI().updateUI();
+		//ModuleDomainService service = new ModuleDomainService();
+	//	service.updateModule(moduleId, oldModuleValue[0], oldModuleValue[1]);
+	//	ServiceProvider.getInstance().getDefineService().getDefinedGUI().updateUI();
 	}
 
 	@Override
 	public void redo() {
 		
-		ModuleDomainService service = new ModuleDomainService();
-		service.updateModule(moduleId, newModuleValue[0], newModuleValue[1]);
-		ServiceProvider.getInstance().getDefineService().getDefinedGUI().updateUI();
+	//	ModuleDomainService service = new ModuleDomainService();
+		//service.updateModule(moduleId, newModuleValue[0], newModuleValue[1]);
+		//ServiceProvider.getInstance().getDefineService().getDefinedGUI().updateUI();
 	}
 
 }

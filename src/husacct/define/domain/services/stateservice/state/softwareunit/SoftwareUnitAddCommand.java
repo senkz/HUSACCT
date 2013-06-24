@@ -2,7 +2,11 @@ package husacct.define.domain.services.stateservice.state.softwareunit;
 
 import husacct.define.domain.module.ModuleStrategy;
 import husacct.define.domain.services.SoftwareUnitDefinitionDomainService;
+import husacct.define.domain.services.UndoRedoService;
+import husacct.define.domain.services.stateservice.StateService;
 import husacct.define.domain.services.stateservice.interfaces.Istate;
+import husacct.define.domain.softwareunit.SoftwareUnitDefinition;
+import husacct.define.domain.softwareunit.SoftwareUnitDefinition.Type;
 import husacct.define.task.DefinitionController;
 import husacct.define.task.SoftwareUnitController;
 import husacct.define.task.components.AnalyzedModuleComponent;
@@ -24,20 +28,24 @@ public class SoftwareUnitAddCommand implements Istate {
 
 	@Override
 	public void undo() {
-	SoftwareUnitDefinitionDomainService service = new SoftwareUnitDefinitionDomainService();
-	for (AnalyzedModuleComponent unit : units) {
-		service.removeSoftwareUnit(module.getId(), units);
-	}
 	
+	
+	ArrayList<SoftwareUnitDefinition> uni = new ArrayList<SoftwareUnitDefinition>();
+	for (AnalyzedModuleComponent u : units) {
+		uni.add(new SoftwareUnitDefinition(u.getUniqueName(), Type.valueOf(u.getType())));
+	}
+	UndoRedoService.getInstance().removeSeperatedSoftwareUnit(uni, module.getId());
 		
 	}
 
 	@Override
 	public void redo() {
-		DefinitionController.getInstance().setSelectedModuleId(module.getId());
-		SoftwareUnitController controller = new SoftwareUnitController(module.getId());
-		controller.save(units);
-		
+
+		ArrayList<SoftwareUnitDefinition> uni = new ArrayList<SoftwareUnitDefinition>();
+		for (AnalyzedModuleComponent u : units) {
+			uni.add(new SoftwareUnitDefinition(u.getUniqueName(), Type.valueOf(u.getType())));
+		}
+		UndoRedoService.getInstance().addSeperatedSoftwareUnit(uni, module.getId());
 	}
 
 }

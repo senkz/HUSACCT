@@ -289,7 +289,7 @@ public class AppliedRulesJPanel extends HelpableJPanel implements ActionListener
 				}
 			}
 			DomainGateway.getInstance().removeRules(selectedRules);
-			DefinitionController.getInstance().removeRules(selectedRules);
+			
 		}
 	}
 

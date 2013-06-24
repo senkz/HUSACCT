@@ -7,4 +7,5 @@ public interface IModuleSeperatedInterface extends IseparatedDefinition {
 	public void removeSeperatedModule(ModuleStrategy module);
 	public void layerUp(long moduleID);
 	public void layerDown(long moduleID);
+	public void seperatedUpdateModuleType(ModuleStrategy oldmodule, ModuleStrategy newModule);
 }

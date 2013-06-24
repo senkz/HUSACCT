@@ -258,9 +258,11 @@ for (AbstractCombinedComponent unit : tobeRestored.getChildren()) {
 @Override
 public void addSeperatedSoftwareUnit(List<SoftwareUnitDefinition> units,
 		long moduleID) {
+System.out.println("helloooooooooooooooooo ");
 	for (SoftwareUnitDefinition softwareUnitDefinition : units) {
 	AnalyzedModuleComponent	unitToBeinserted=	StateService.instance().getAnalyzedSoftWareUnit(softwareUnitDefinition);
-		removeTreeItem(unitToBeinserted);
+		tree.removeTreeItem(unitToBeinserted);
+		tree.repaint();
 		
 	}
 	
@@ -269,9 +271,11 @@ public void addSeperatedSoftwareUnit(List<SoftwareUnitDefinition> units,
 @Override
 public void removeSeperatedSoftwareUnit(List<SoftwareUnitDefinition> units,
 		long moduleId) {
+	System.out.println("helloooooooooooooooooo ");
 	for (SoftwareUnitDefinition softwareUnitDefinition : units) {
 		AnalyzedModuleComponent	unitToBeinserted=	StateService.instance().getAnalyzedSoftWareUnit(softwareUnitDefinition);
-			restoreTreeItem(unitToBeinserted);
+			tree.restoreTreeItem(unitToBeinserted);
+			tree.repaint();
 			
 		}
 	

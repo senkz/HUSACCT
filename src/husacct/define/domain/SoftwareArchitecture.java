@@ -712,8 +712,10 @@ public class SoftwareArchitecture implements IModuleSeperatedInterface,
 
 	@Override
 	public void addSeperatedAppliedRule(List<AppliedRuleStrategy> rules) {
+
 		for (AppliedRuleStrategy appliedRuleStrategy : rules) {
-			addAppliedRule(appliedRuleStrategy);
+			
+			appliedRules.add(appliedRuleStrategy);
 		}
 
 	}
@@ -744,7 +746,7 @@ public class SoftwareArchitecture implements IModuleSeperatedInterface,
 		AppliedRuleStrategy parent = getAppliedRuleById(parentRuleID);
 		for (AppliedRuleStrategy appliedRuleStrategy : rules) {
 
-			parent.removeException(appliedRuleStrategy);
+			parent.removeExceptionById(appliedRuleStrategy.getId());
 		}
 
 	}
@@ -861,6 +863,12 @@ public class SoftwareArchitecture implements IModuleSeperatedInterface,
 		result.setEnabled(enabled);
 		
 	
+	}
+
+	@Override
+	public void seperatedUpdateModuleType(ModuleStrategy oldmodule, ModuleStrategy newModule) {
+		updateModuleType(oldmodule, newModule.getType());
+		
 	}
 
 

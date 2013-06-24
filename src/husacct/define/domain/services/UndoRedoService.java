@@ -14,6 +14,9 @@ import husacct.define.domain.softwareunit.SoftwareUnitDefinition;
 
 public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitSeperatedInterface,IAppliedRuleSeperatedInterface{
  private List<IseparatedDefinition> observers = new ArrayList<IseparatedDefinition>();
+ private List<IAppliedRuleSeperatedInterface> applies = new ArrayList<IAppliedRuleSeperatedInterface>();
+ private List<IModuleSeperatedInterface> modules = new ArrayList<IModuleSeperatedInterface>();
+ private List<ISofwareUnitSeperatedInterface> sU= new ArrayList<ISofwareUnitSeperatedInterface>();
  private static UndoRedoService instance =null;
  public static UndoRedoService getInstance()
  {
@@ -33,8 +36,8 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 
 	@Override
 	public void addSeperatedModule(ModuleStrategy module) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(IModuleSeperatedInterface.class)) {
-			((IModuleSeperatedInterface)observer).addSeperatedModule(module);
+		for (IModuleSeperatedInterface observer : modules) {
+			observer.addSeperatedModule(module);
 		}
 		
 	}
@@ -42,9 +45,9 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 	@Override
 	public void removeSeperatedModule(ModuleStrategy module) {
 		
-		for (Object observer : getSeperatedSofwareUnitInterfacess(IModuleSeperatedInterface.class)) {
+		for (IModuleSeperatedInterface observer : modules) {
 			
-			((IModuleSeperatedInterface)observer).removeSeperatedModule(module);
+			observer.removeSeperatedModule(module);
 		}
 		
 	}
@@ -52,8 +55,8 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 
 	@Override
 	public void layerUp(long moduleID) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(IModuleSeperatedInterface.class)) {
-			((IModuleSeperatedInterface)observer).layerUp(moduleID);
+		for (IModuleSeperatedInterface observer : modules) {
+			observer.layerUp(moduleID);
 		}
 		
 	}
@@ -64,8 +67,8 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 
 	@Override
 	public void layerDown(long moduleID) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(IModuleSeperatedInterface.class)) {
-			 ((IModuleSeperatedInterface)observer).layerDown(moduleID);
+		for (IModuleSeperatedInterface observer : modules) {
+			observer.layerDown(moduleID);
 		}
 		
 	}
@@ -73,32 +76,34 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 
 	@Override
 	public void addSeperatedSoftwareUnit(List<SoftwareUnitDefinition> units, long moduleId) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(ISofwareUnitSeperatedInterface.class)) {
-			((ISofwareUnitSeperatedInterface)observer).addSeperatedSoftwareUnit(units, moduleId);
+		for (ISofwareUnitSeperatedInterface observer : sU) {
+			observer.addSeperatedSoftwareUnit(units, moduleId);
 		}
 		
 	}
 
 	@Override
 	public void removeSeperatedSoftwareUnit(List<SoftwareUnitDefinition> units, long moduleId) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(ISofwareUnitSeperatedInterface.class)) {
-			((ISofwareUnitSeperatedInterface)observer).removeSeperatedSoftwareUnit(units, moduleId);
+		for (ISofwareUnitSeperatedInterface observer : sU) {
+		observer.removeSeperatedSoftwareUnit(units, moduleId);
 		}
 		
 	}
 
 	@Override
 	public void addSeperatedAppliedRule(List<AppliedRuleStrategy> rules) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(IAppliedRuleSeperatedInterface.class)) {
-			((IAppliedRuleSeperatedInterface)observer).addSeperatedAppliedRule(rules);
+		
+		for (IAppliedRuleSeperatedInterface observer : applies) {
+		
+			observer.addSeperatedAppliedRule(rules);
 		}
 		
 	}
 
 	@Override
 	public void removeSeperatedAppliedRule(List<AppliedRuleStrategy> rules) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(IAppliedRuleSeperatedInterface.class)) {
-			((IAppliedRuleSeperatedInterface)observer).removeSeperatedAppliedRule(rules);
+		for (IAppliedRuleSeperatedInterface observer : applies) {
+			observer.removeSeperatedAppliedRule(rules);
 		}
 		
 	}
@@ -109,7 +114,8 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 
 	@Override
 	public void addSeperatedExeptionRule(long parentRuleID,List<AppliedRuleStrategy> rules) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(IAppliedRuleSeperatedInterface.class)) {
+		for (IAppliedRuleSeperatedInterface observer : applies) {
+			
 			((IAppliedRuleSeperatedInterface)observer).addSeperatedExeptionRule(parentRuleID,rules);
 		}
 		
@@ -121,7 +127,7 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 
 	@Override
 	public void removeSeperatedExeptionRule(long parentRuleID,List<AppliedRuleStrategy> rules) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(IAppliedRuleSeperatedInterface.class)) {
+		for (IAppliedRuleSeperatedInterface observer : applies) {
 			((IAppliedRuleSeperatedInterface)observer).removeSeperatedExeptionRule(parentRuleID,rules);
 		}
 		
@@ -137,35 +143,24 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 
 
 	
-	public List<Object> getSeperatedSofwareUnitInterfacess(Class c)
-	{
-		ArrayList<Object> results = new ArrayList<Object>();
-		
-		for (IseparatedDefinition result : observers) {
-			
-			
-			for(Class cl :result.getClass().getInterfaces())
-			{
-				
-				if (cl.equals( c)) {
-			
-					results.add(result);
-				}
-				
-			}
-		}
-		
-		
-		return results;
-	}
+	
 	
 
 
 
 
 	public void registerObserver(IseparatedDefinition observer) {
+
+if (observer instanceof IAppliedRuleSeperatedInterface) {
 		
-				observers.add(observer);
+	applies.add((IAppliedRuleSeperatedInterface) observer);
+			}
+if (observer instanceof IseparatedDefinition) {
+			sU.add((ISofwareUnitSeperatedInterface) observer);	
+			}
+if (observer instanceof IModuleSeperatedInterface) {
+	modules.add((IModuleSeperatedInterface) observer);
+}
 	
 		
 		
@@ -177,8 +172,8 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 
 	@Override
 	public void addExpression(long moduleId, ExpressionUnitDefinition expression) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(ISofwareUnitSeperatedInterface.class)) {
-			((ISofwareUnitSeperatedInterface)observer).addExpression(moduleId, expression);
+		for (ISofwareUnitSeperatedInterface observer : sU) {
+		observer.addExpression(moduleId, expression);
 		}
 		
 	}
@@ -190,8 +185,8 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 	@Override
 	public void removeExpression(long moduleId,
 			ExpressionUnitDefinition expression) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(ISofwareUnitSeperatedInterface.class)) {
-			((ISofwareUnitSeperatedInterface)observer).removeExpression(moduleId, expression);
+		for (ISofwareUnitSeperatedInterface observer : sU) {
+	         observer.removeExpression(moduleId, expression);
 		}
 		
 	}
@@ -203,8 +198,8 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 	@Override
 	public void editExpression(long moduleId,
 			ExpressionUnitDefinition oldExpresion, ExpressionUnitDefinition newExpression) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(ISofwareUnitSeperatedInterface.class)) {
-			((ISofwareUnitSeperatedInterface)observer).editExpression(moduleId, oldExpresion, newExpression);
+		for (ISofwareUnitSeperatedInterface observer : sU) {
+			observer.editExpression(moduleId, oldExpresion, newExpression);
 		}
 		
 	}
@@ -216,8 +211,8 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 	@Override
 	public void switchSoftwareUnitLocation(long fromModule, long toModule,
 			List<String> uniqNames) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(ISofwareUnitSeperatedInterface.class)) {
-			((ISofwareUnitSeperatedInterface)observer).switchSoftwareUnitLocation(fromModule, toModule, uniqNames);
+		for (ISofwareUnitSeperatedInterface observer : sU) {
+		observer.switchSoftwareUnitLocation(fromModule, toModule, uniqNames);
 		}
 		
 	}
@@ -229,10 +224,22 @@ public class UndoRedoService  implements IModuleSeperatedInterface,ISofwareUnitS
 	@Override
 	public void editAppliedRule(long ruleid,
 			Object[] newValues) {
-		for (Object observer : getSeperatedSofwareUnitInterfacess(IAppliedRuleSeperatedInterface.class)) {
-			((IAppliedRuleSeperatedInterface)observer).editAppliedRule(ruleid, newValues);
+		for (IAppliedRuleSeperatedInterface observer : applies) {
+		observer.editAppliedRule(ruleid, newValues);
 		}
 		
+		
+	}
+
+
+
+
+
+	@Override
+	public void seperatedUpdateModuleType(ModuleStrategy oldmodule, ModuleStrategy newModule) {
+		for (IModuleSeperatedInterface observer : modules) {
+			observer.seperatedUpdateModuleType(oldmodule, newModule);
+		}
 		
 	}
 

@@ -238,6 +238,7 @@ return	allUnitsRegistry.getNotMappedUnits();
 
 	public void removeAppliedRule(AppliedRuleStrategy appliedRuleById) {
 		ArrayList<AppliedRuleStrategy> rules = new ArrayList<AppliedRuleStrategy>();
+		rules.add(appliedRuleById);
 		stateController.insertCommand(new RemoveAppliedRuleCommand(rules) );
 		
 	}

@@ -10,10 +10,8 @@ import husacct.define.domain.appliedrule.AppliedRuleFactory;
 import husacct.define.domain.appliedrule.AppliedRuleStrategy;
 import husacct.define.domain.module.ModuleFactory;
 import husacct.define.domain.module.ModuleStrategy;
-import husacct.define.domain.module.modules.Layer;
 import husacct.define.domain.services.AppliedRuleDomainService;
 import husacct.define.domain.services.AppliedRuleExceptionDomainService;
-import husacct.define.domain.services.DefaultRuleDomainService;
 import husacct.define.domain.services.ModuleDomainService;
 import husacct.define.domain.services.stateservice.StateService;
 import husacct.define.domain.softwareunit.SoftwareUnitDefinition;
@@ -26,7 +24,6 @@ import husacct.define.task.components.AbstractDefineComponent;
 import husacct.define.task.components.AnalyzedModuleComponent;
 import husacct.define.task.components.DefineComponentFactory;
 import husacct.define.task.components.SoftwareArchitectureComponent;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observer;
@@ -573,7 +570,7 @@ public class AppliedRuleController extends PopUpController {
 		appliedRuleExceptionService
 				.removeAllAppliedRuleExceptions(currentAppliedRuleId);
 		ArrayList<AppliedRuleStrategy> rules = new ArrayList<AppliedRuleStrategy>();
-		AppliedRuleFactory factory = new AppliedRuleFactory();
+		
 		for (HashMap<String, Object> exceptionRule : exceptionRules) {
 			long appliedRuleId = currentAppliedRuleId;
 			String ruleTypeKey = (String) exceptionRule.get("ruleTypeKey");
@@ -598,10 +595,7 @@ public class AppliedRuleController extends PopUpController {
 			rules.add(exceptionRule2);
 
 		}
-		// hot hack {{
-		StateService.instance().addExceptionRule(
-				SoftwareArchitecture.getInstance().getAppliedRuleById(
-						currentAppliedRuleId), rules);
+		
 
 	}
 

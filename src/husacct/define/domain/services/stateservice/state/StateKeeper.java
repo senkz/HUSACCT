@@ -3,9 +3,9 @@ package husacct.define.domain.services.stateservice.state;
 import husacct.define.domain.services.stateservice.interfaces.Istate;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
+
+
 
 public class StateKeeper implements Istate {
 
@@ -171,5 +171,3 @@ public class StateKeeper implements Istate {
 	}
 
 }
-
-

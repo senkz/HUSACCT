@@ -1,10 +1,11 @@
 package husacct.define.domain.appliedrule;
 
 import husacct.ServiceProvider;
-import husacct.define.domain.SoftwareArchitecture;
+
 import husacct.define.domain.module.ModuleStrategy;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public abstract class AppliedRuleStrategy {
 	protected String type;
@@ -64,12 +65,18 @@ public abstract class AppliedRuleStrategy {
 
 	public void removeExceptionById(long exceptionRuleId) {
 		boolean exceptionFound = false;
-		for (AppliedRuleStrategy rule : exceptions){
+		Iterator<AppliedRuleStrategy> it = exceptions.iterator();
+		while(it.hasNext())
+		{
+			AppliedRuleStrategy rule =it.next();
 			if (rule.getId() == exceptionRuleId){
 				exceptionFound = true;
-				exceptions.remove(rule);
+				it.remove();
+				
+				
 			}
 		}
+		
 		if (!exceptionFound){throw new RuntimeException(ServiceProvider.getInstance().getLocaleService().getTranslatedString("NoException"));}
 	}
 
