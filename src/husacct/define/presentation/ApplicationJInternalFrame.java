@@ -13,6 +13,7 @@ import husacct.define.presentation.jdialog.WarningTableJDialog;
 import husacct.define.presentation.jpanel.DefinitionJPanel;
 import husacct.define.presentation.utils.JPanelStatus;
 import husacct.define.presentation.utils.ReportToHTML;
+import husacct.define.task.DefinitionController;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -138,7 +139,7 @@ public class ApplicationJInternalFrame extends HelpableJInternalFrame implements
 	private void setButtonsVisability(JButton undo, JButton redo) {
 		
 		boolean[] statuses= StateService.instance().getRedoAndUndoStates();
-		
+	
 		undo.setEnabled(statuses[0]);
 		redo.setEnabled(statuses[1]);
 	}
@@ -164,12 +165,12 @@ public class ApplicationJInternalFrame extends HelpableJInternalFrame implements
 			}
 			if (e.getSource()==redoButton) {
 				StateService.instance().redo();
-				
+			    setButtonsVisability(undoButton,redoButton);
 				
 			}
             if (e.getSource()==undoButton) {
 			StateService.instance().undo();
-			
+		    setButtonsVisability(undoButton,redoButton);
             	
 			}
 		}
@@ -194,7 +195,7 @@ public class ApplicationJInternalFrame extends HelpableJInternalFrame implements
 	public void update() {
 
      setButtonsVisability(undoButton,redoButton);
-     //DefinitionController.getInstance().notifyObservers();
+   
 
 
 }

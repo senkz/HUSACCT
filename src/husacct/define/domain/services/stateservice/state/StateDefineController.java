@@ -13,14 +13,16 @@ public class StateDefineController {
 	public boolean undo() {
 		DefinitionController.getInstance().setSelectedModuleId(0);
 		keeper.undo();
+		DefinitionController.getInstance().notifyObservers();
 
 		return true;
 
 	}
 
 	public boolean redo() {
-		keeper.redo();
 		DefinitionController.getInstance().setSelectedModuleId(0);
+		keeper.redo();
+		DefinitionController.getInstance().notifyObservers();
 		return true;
 	}
 
