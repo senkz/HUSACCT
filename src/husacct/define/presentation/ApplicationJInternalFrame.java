@@ -13,7 +13,10 @@ import husacct.define.presentation.jdialog.WarningTableJDialog;
 import husacct.define.presentation.jpanel.DefinitionJPanel;
 import husacct.define.presentation.utils.JPanelStatus;
 import husacct.define.presentation.utils.ReportToHTML;
+<<<<<<< HEAD
 import husacct.define.task.DefinitionController;
+=======
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -79,8 +82,13 @@ public class ApplicationJInternalFrame extends HelpableJInternalFrame implements
 
 	private void addToolBar() {
 		JSplitPane splitPane = new JSplitPane();
+<<<<<<< HEAD
 		 splitPane.setDividerLocation(300);
          splitPane.setDividerLocation(365);
+=======
+		splitPane.setDividerLocation(365);
+		splitPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 
 		JToolBar toolBar = new JToolBar();
 		toolBar.setEnabled(false);
@@ -137,6 +145,11 @@ public class ApplicationJInternalFrame extends HelpableJInternalFrame implements
 	}
 
 	private void setButtonsVisability(JButton undo, JButton redo) {
+<<<<<<< HEAD
+=======
+		
+		boolean[] statuses= StateService.instance().getRedoAndUndoStates();
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 		
 		boolean[] statuses= StateService.instance().getRedoAndUndoStates();
 	
@@ -195,7 +208,11 @@ public class ApplicationJInternalFrame extends HelpableJInternalFrame implements
 	public void update() {
 
      setButtonsVisability(undoButton,redoButton);
+<<<<<<< HEAD
    
+=======
+     //DefinitionController.getInstance().notifyObservers();
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 
 
 }

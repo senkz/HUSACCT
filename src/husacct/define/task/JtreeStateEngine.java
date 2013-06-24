@@ -35,6 +35,7 @@ public abstract class JtreeStateEngine {
 	private StateDefineController stateController = new StateDefineController();
 	private AnalyzedUnitComparator analyzerComparator = new AnalyzedUnitComparator();
 	private AnalyzedUnitRegistry allUnitsRegistry = new AnalyzedUnitRegistry();
+	
 
 	public JtreeStateEngine() {
 		logger = Logger.getLogger(JtreeStateEngine.class);
@@ -226,6 +227,44 @@ return	allUnitsRegistry.getNotMappedUnits();
 	public void registerImportedUnit(SoftwareUnitDefinition unit) {
 		allUnitsRegistry.registerImportedUnit(unit);
 
+	}
+
+	public void registerImportedUnit(SoftwareUnitDefinition unit) {
+		allUnitsRegistry.registerImportedUnit(unit);
+		
+	}
+
+	public void registerImportedData() {
+       for (String unigNames : allUnitsRegistry.getimportedUnits()) {
+		AnalyzedModuleComponent result = allUnitsRegistry.getAnalyzedUnit(unigNames.toLowerCase());
+		if (result!=null) {
+			result.freeze();
+		}
+		
+	}
+		
+	}
+
+	public void addAppliedRule(AppliedRuleStrategy rule) {
+		ArrayList<AppliedRuleStrategy> rules = new ArrayList<AppliedRuleStrategy>();
+		rules.add(rule);
+		stateController.insertCommand(new AppliedRuleAddCommand(rules));
+		
+	}
+
+	public void removeAppliedRule(AppliedRuleStrategy appliedRuleById) {
+		ArrayList<AppliedRuleStrategy> rules = new ArrayList<AppliedRuleStrategy>();
+		stateController.insertCommand(new RemoveAppliedRuleCommand(rules) );
+		
+	}
+
+	public void editAppliedRule(AppliedRuleStrategy rule, Object[] objects) {
+		stateController.insertCommand(new EditAppliedRuleCommand(rule,objects) );
+	}
+
+	public void removeAppliedRuleExeption(long parentRuleId,
+			AppliedRuleStrategy exceptionRule) {
+		stateController.insertCommand(new RemoveAppliedRuleExeptionCommand(parentRuleId,exceptionRule));	
 	}
 
 

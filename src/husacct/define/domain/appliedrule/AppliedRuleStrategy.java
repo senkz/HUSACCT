@@ -1,7 +1,11 @@
 package husacct.define.domain.appliedrule;
 
 import husacct.ServiceProvider;
+<<<<<<< HEAD
 
+=======
+import husacct.define.domain.SoftwareArchitecture;
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 import husacct.define.domain.module.ModuleStrategy;
 
 import java.util.ArrayList;

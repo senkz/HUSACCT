@@ -35,8 +35,15 @@ public class AnalyzedModuleTree extends JTree {
 
 	}
 
+<<<<<<< HEAD
 }
 
 	
 
 
+=======
+	
+
+	
+}
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5

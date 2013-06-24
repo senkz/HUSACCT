@@ -17,15 +17,25 @@ public class CodeLevelWarning extends WarningMessage {
 		this.notCodeLevelModule = notcodelevelmodule;
 		generateMessage();
 	}
+	public CodeLevelWarning(AnalyzedModuleComponent notcodelevelmodule) {
+		
+		this.notCodeLevelModule = notcodelevelmodule;
+		generateMessage();
+	}
+
 
 
 	@Override
 	public void generateMessage() {
 		this.description = "your mapped unit does not exist at code level";
 		
+<<<<<<< HEAD
 
 		this.resource =  " Unit name: "
 
+=======
+		this.resource =  " Unit name: "
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 				+ notCodeLevelModule.getUniqueName();
 		this.location = "";
 		this.type = "CodeLevel";

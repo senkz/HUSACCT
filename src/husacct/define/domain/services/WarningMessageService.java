@@ -263,7 +263,11 @@ for (AbstractCombinedComponent ab : list) {
 
 
 	public ArrayList<CodeLevelWarning> getNotCodeLevelWarnings() {
+<<<<<<< HEAD
 
+=======
+		System.out.println(codelevelWarnings.size() +"pulll meee");
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 		return codelevelWarnings;
 	}
 
@@ -336,6 +340,7 @@ for (AbstractCombinedComponent ab : list) {
 		warnings = new ArrayList<WarningMessage>();
 	}
 
+<<<<<<< HEAD
 
 	public void resetNotAnalyzed() {
 	codelevelWarnings = new ArrayList<CodeLevelWarning>();
@@ -356,6 +361,13 @@ for (AbstractCombinedComponent ab : list) {
 
 
 
+=======
+	public void resetNotAnalyzed() {
+	//codelevelWarnings = new ArrayList<CodeLevelWarning>();
+		
+	}
+
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 	
 	
 }

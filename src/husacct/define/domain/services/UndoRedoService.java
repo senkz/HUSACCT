@@ -211,8 +211,13 @@ if (observer instanceof IModuleSeperatedInterface) {
 	@Override
 	public void switchSoftwareUnitLocation(long fromModule, long toModule,
 			List<String> uniqNames) {
+<<<<<<< HEAD
 		for (ISofwareUnitSeperatedInterface observer : sU) {
 		observer.switchSoftwareUnitLocation(fromModule, toModule, uniqNames);
+=======
+		for (Object observer : getSeperatedSofwareUnitInterfacess(ISofwareUnitSeperatedInterface.class)) {
+			((ISofwareUnitSeperatedInterface)observer).switchSoftwareUnitLocation(fromModule, toModule, uniqNames);
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 		}
 		
 	}
@@ -224,6 +229,7 @@ if (observer instanceof IModuleSeperatedInterface) {
 	@Override
 	public void editAppliedRule(long ruleid,
 			Object[] newValues) {
+<<<<<<< HEAD
 		for (IAppliedRuleSeperatedInterface observer : applies) {
 		observer.editAppliedRule(ruleid, newValues);
 		}
@@ -240,6 +246,12 @@ if (observer instanceof IModuleSeperatedInterface) {
 		for (IModuleSeperatedInterface observer : modules) {
 			observer.seperatedUpdateModuleType(oldmodule, newModule);
 		}
+=======
+		for (Object observer : getSeperatedSofwareUnitInterfacess(IAppliedRuleSeperatedInterface.class)) {
+			((IAppliedRuleSeperatedInterface)observer).editAppliedRule(ruleid, newValues);
+		}
+		
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 		
 	}
 

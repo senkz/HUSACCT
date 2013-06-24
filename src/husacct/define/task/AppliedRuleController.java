@@ -70,27 +70,31 @@ public class AppliedRuleController extends PopUpController {
 	}
 
 	private void addDefineModuleChildComponents(
-			AbstractCombinedComponent parentComponent, ModuleStrategy module) {
+			AbstractCombinedComponent parentComponent, ModuleStrategy module,
+			boolean WithAnalyzedModules) {
 		AbstractDefineComponent childComponent = DefineComponentFactory
 				.getDefineComponent(module);
 		for (ModuleStrategy subModule : module.getSubModules()) {
-			addDefineModuleChildComponents(childComponent, subModule);
+			addDefineModuleChildComponents(childComponent, subModule, WithAnalyzedModules);
 		}
 
 		ArrayList<SoftwareUnitDefinition> softwareUnits = module.getUnits();
-		for (SoftwareUnitDefinition softwareUnit : softwareUnits) {
-			AnalyzedModuleComponent analysedComponent = new AnalyzedModuleComponent(
-					softwareUnit.getName(), softwareUnit.getName(),
-					softwareUnit.getType().toString(), "public");
 
-			AnalysedModuleDTO[] children = ServiceProvider.getInstance()
-					.getAnalyseService()
-					.getChildModulesInModule(softwareUnit.getName());
-			for (AnalysedModuleDTO subModule : children) {
-				addChildComponents(analysedComponent, subModule);
+		if (WithAnalyzedModules) {
+			for (SoftwareUnitDefinition softwareUnit : softwareUnits) {
+				AnalyzedModuleComponent analysedComponent = new AnalyzedModuleComponent(
+						softwareUnit.getName(), softwareUnit.getName(),
+						softwareUnit.getType().toString(), "public");
+
+				AnalysedModuleDTO[] children = ServiceProvider.getInstance()
+						.getAnalyseService()
+						.getChildModulesInModule(softwareUnit.getName());
+				for (AnalysedModuleDTO subModule : children) {
+					addChildComponents(analysedComponent, subModule);
+				}
+
+				childComponent.addChild(analysedComponent);
 			}
-
-			childComponent.addChild(analysedComponent);
 		}
 
 		parentComponent.addChild(childComponent);
@@ -229,14 +233,16 @@ public class AppliedRuleController extends PopUpController {
 					} else {
 						ruleTypeKeys.add(currentRuleType);
 						ruleTypeValues.add(ServiceProvider.getInstance()
-								.getLocaleService().getTranslatedString(currentRuleType));
-//						RuleTypeDTO[] defaultRuleForModule = ServiceProvider.getInstance()
-//						.getValidateService().getDefaultRuleTypesOfModule(selectedModule.getType());
-//						for(RuleTypeDTO rtd : defaultRuleForModule) {
-//							if(rtd.getKey().equals(currentRuleType)) {
-//								ruleTypeValues.add(rtd);
-//							}
-//						}
+								.getLocaleService()
+								.getTranslatedString(currentRuleType));
+						// RuleTypeDTO[] defaultRuleForModule =
+						// ServiceProvider.getInstance()
+						// .getValidateService().getDefaultRuleTypesOfModule(selectedModule.getType());
+						// for(RuleTypeDTO rtd : defaultRuleForModule) {
+						// if(rtd.getKey().equals(currentRuleType)) {
+						// ruleTypeValues.add(rtd);
+						// }
+						// }
 					}
 				}
 			}
@@ -351,13 +357,17 @@ public class AppliedRuleController extends PopUpController {
 	public AbstractCombinedComponent getModuleTreeComponents() {
 		SoftwareArchitectureComponent rootComponent = new SoftwareArchitectureComponent();
 		ArrayList<ModuleStrategy> modules = moduleService.getSortedModules();
+<<<<<<< HEAD
 		
 		for (ModuleStrategy module : modules) {
 			module.removeAllSUDefintions();
 		}
 		
+=======
+
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 		for (ModuleStrategy module : modules) {
-			addDefineModuleChildComponents(rootComponent, module);
+			addDefineModuleChildComponents(rootComponent, module, false);
 		}
 		return rootComponent;
 	}

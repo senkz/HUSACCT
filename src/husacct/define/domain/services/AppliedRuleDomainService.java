@@ -7,7 +7,10 @@ import husacct.define.domain.appliedrule.AppliedRuleFactory;
 import husacct.define.domain.appliedrule.AppliedRuleStrategy;
 import husacct.define.domain.module.ModuleStrategy;
 import husacct.define.domain.services.stateservice.StateService;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 728ed6ea96ae32da46002d13adc0c058a06e0fd5
 
 import java.util.ArrayList;
 
