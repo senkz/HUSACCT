@@ -1,6 +1,8 @@
 package husacct.define.domain.services.stateservice.state;
 
 import husacct.define.domain.services.stateservice.interfaces.Istate;
+import husacct.define.task.DefinitionController;
+
 import java.util.ArrayList;
 
 public class StateDefineController {
@@ -9,7 +11,7 @@ public class StateDefineController {
 	private StateKeeper keeper = new StateKeeper(states);
 
 	public boolean undo() {
-
+		DefinitionController.getInstance().setSelectedModuleId(0);
 		keeper.undo();
 
 		return true;
@@ -18,6 +20,7 @@ public class StateDefineController {
 
 	public boolean redo() {
 		keeper.redo();
+		DefinitionController.getInstance().setSelectedModuleId(0);
 		return true;
 	}
 

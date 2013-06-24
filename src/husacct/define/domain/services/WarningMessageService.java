@@ -263,7 +263,7 @@ for (AbstractCombinedComponent ab : list) {
 
 
 	public ArrayList<CodeLevelWarning> getNotCodeLevelWarnings() {
-		System.out.println(codelevelWarnings.size() +"pulll meee");
+
 		return codelevelWarnings;
 	}
 
@@ -341,6 +341,13 @@ for (AbstractCombinedComponent ab : list) {
 	codelevelWarnings = new ArrayList<CodeLevelWarning>();
 		
 	}
+
+
+	public int sizeOfnotImplemented() {
+		
+		return warnings.size();
+	}
+
 
 
 	

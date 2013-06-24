@@ -20,9 +20,11 @@ public class WarningMessageFactory {
 		WarningMessageService.getInstance().updateWarnings();
 		WarningMessageContainer root = new WarningMessageContainer(new CustomWarningMessage("WARNINGS"));
 		WarningMessageContainer codelevelContainer = new WarningMessageContainer(new CustomWarningMessage("Code Level "));
+		((CustomWarningMessage)codelevelContainer.getvalue()).setDecription(codelevelContainer.getchildren().size());
 		WarningMessageContainer implevelContainer = new WarningMessageContainer(new CustomWarningMessage("Implementation Level"));
-		
-		WarningMessageContainer customContainer = new WarningMessageContainer(new CustomWarningMessage("Custom"));
+		((CustomWarningMessage)implevelContainer.getvalue()).setDecription(WarningMessageService.getInstance().sizeOfnotImplemented());
+		//in the future U can display custom messages 
+		//WarningMessageContainer customContainer = new WarningMessageContainer(new CustomWarningMessage("Custom"));
 	WarningMessageContainer notMapped=	getNotmapped();
 		addNotCodeLevel(codelevelContainer);
 		addNotMappedModule(implevelContainer);
