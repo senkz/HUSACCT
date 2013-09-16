@@ -39,10 +39,10 @@ public class ImportExportTest {
 	}
 
 	public void testImporting() throws URISyntaxException, ParserConfigurationException, SAXException, IOException, DatatypeConfigurationException {
-		ClassLoader.getSystemResource("husaccttest/validate/testfile.xml").toURI();
+		ClassLoader.getSystemResource("husaccttest/validate/testfile_nieuw.xml").toURI();
 		DocumentBuilderFactory domfactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dombuilder = domfactory.newDocumentBuilder();
-		File file = new File(ClassLoader.getSystemResource("husaccttest/validate/testfile.xml").toURI());
+		File file = new File(ClassLoader.getSystemResource("husaccttest/validate/testfile_nieuw.xml").toURI());
 		DOMBuilder domBuilder = new DOMBuilder();
 		Document document = domBuilder.build(dombuilder.parse(file));
 		validate.loadWorkspaceData(document.getRootElement());
@@ -66,8 +66,6 @@ public class ImportExportTest {
 		}
 	}
 
-	// TODO assert a programming language is found like
-	// findSeverityPerTypeElement();
 	private void checkSeveritiesPerTypesPerProgrammingLanguagesTheSameAsSeveritiesPerTypesPerProgrammingLanguagesElement(
 			HashMap<String, HashMap<String, Severity>> severitiesPerTypesPerProgrammingLanguages,
 			Element severitiesPerTypesPerProgrammingLanguagesElement) {
@@ -174,15 +172,13 @@ public class ImportExportTest {
 	@Test
 	public void testExportingAndImporting() throws URISyntaxException, ParserConfigurationException, SAXException, IOException, DatatypeConfigurationException {
 		testImporting();
-		// checkViolationsTheSameAsViolationsElement(validate.getConfiguration().getAllViolations().getValue(),
-		// validate.getWorkspaceData().getChild("violations"));
+		
 		checkSeveritiesTheSameAsSeveritiesElement(validate.getConfiguration()
 				.getAllSeverities(), validate.getWorkspaceData().getChild("severities"));
 		checkSeveritiesPerTypesPerProgrammingLanguagesTheSameAsSeveritiesPerTypesPerProgrammingLanguagesElement(
 				validate.getConfiguration().getAllSeveritiesPerTypesPerProgrammingLanguages(),
 				validate.getWorkspaceData().getChild("severitiesPerTypesPerProgrammingLanguages"));
-		// checkViolationHistoriesTheSameAsViolationHistoriesElement(validate.getConfiguration().getViolationHistories(),
-		// validate.getWorkspaceData().getChild("violationHistories"));
+		
 		checkActiveViolationTypesTheSameAsActiveViolationTypesElement(validate
 				.getConfiguration().getActiveViolationTypes(), validate.getWorkspaceData().getChild("activeViolationTypes"));
 	}

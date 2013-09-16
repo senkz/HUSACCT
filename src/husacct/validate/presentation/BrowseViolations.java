@@ -1,6 +1,7 @@
 package husacct.validate.presentation;
 
 import husacct.ServiceProvider;
+import husacct.common.help.presentation.HelpableJInternalFrame;
 import husacct.common.locale.ILocaleService;
 import husacct.control.ILocaleChangeListener;
 import husacct.control.presentation.util.LoadingDialog;
@@ -49,7 +50,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
-public class BrowseViolations extends JInternalFrame implements ILocaleChangeListener, FilterViolationsObserver, Observer {
+public class BrowseViolations extends HelpableJInternalFrame implements ILocaleChangeListener, FilterViolationsObserver, Observer {
 
 	private static final long serialVersionUID = 4912981274532255799L;
 	private Logger logger = Logger.getLogger(BrowseViolations.class);
@@ -380,7 +381,7 @@ public class BrowseViolations extends JInternalFrame implements ILocaleChangeLis
 		clearViolationsTableModelRows();
 		shownViolations = violations;
 		for (Violation violation : violations) {
-			violationsTableModel.addRow(new Object[] {violation.getClassPathFrom(), violation.getClassPathTo(), localeService.getTranslatedString(violation.getRuletypeKey()), localeService.getTranslatedString(violation.getViolationtypeKey()), (violation.isIndirect() ? localeService.getTranslatedString("Indirect") : localeService.getTranslatedString("Direct")), violation.getSeverity().toString()});
+			violationsTableModel.addRow(new Object[] {violation.getClassPathFrom(), violation.getClassPathTo(), localeService.getTranslatedString(violation.getRuletypeKey()), localeService.getTranslatedString(violation.getViolationTypeKey()), (violation.isIndirect() ? localeService.getTranslatedString("Indirect") : localeService.getTranslatedString("Direct")), violation.getSeverity().toString()});
 			violationsTable.revalidate();
 		}
 		violationsTable.setAutoCreateRowSorter(true);

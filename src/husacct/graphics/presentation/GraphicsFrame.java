@@ -3,6 +3,7 @@ package husacct.graphics.presentation;
 import husacct.ServiceProvider;
 import husacct.common.dto.DependencyDTO;
 import husacct.common.dto.ViolationDTO;
+import husacct.common.help.presentation.HelpableJInternalFrame;
 import husacct.common.locale.ILocaleService;
 import husacct.graphics.presentation.figures.BaseFigure;
 import husacct.graphics.presentation.menubars.GraphicsMenuBar;
@@ -24,7 +25,6 @@ import java.awt.event.HierarchyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -32,25 +32,27 @@ import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
 
-public class GraphicsFrame extends JInternalFrame implements UserInputListener {
-	private static final long serialVersionUID = -4683140198375851034L;
-	protected ILocaleService localeService = ServiceProvider.getInstance()
-			.getLocaleService();
-	protected Logger logger = Logger.getLogger(GraphicsFrame.class);
+public class GraphicsFrame extends HelpableJInternalFrame implements
+		UserInputListener {
+	private static final long				serialVersionUID	= -4683140198375851034L;
+	protected ILocaleService				localeService		= ServiceProvider
+																		.getInstance()
+																		.getLocaleService();
+	protected Logger						logger				= Logger.getLogger(GraphicsFrame.class);
 	
-	private DrawingView drawingView;
-	private GraphicsMenuBar menuBar;
-	private ZoomLocationBar locationBar;
-	private String[] currentPaths;
-	private JScrollPane drawingScrollPane, propertiesScrollPane,
-	locationScrollPane;
-	private JSplitPane centerPane;
-	private String ROOT_LEVEL;
-	private boolean showingProperties = false;
+	private DrawingView						drawingView;
+	private GraphicsMenuBar					menuBar;
+	private ZoomLocationBar					locationBar;
+	private String[]						currentPaths;
+	private JScrollPane						drawingScrollPane,
+			propertiesScrollPane, locationScrollPane;
+	private JSplitPane						centerPane;
+	private String							ROOT_LEVEL;
+	private boolean							showingProperties	= false;
 	
-	private int frameTotalWidth;
+	private int								frameTotalWidth;
 	
-	private ArrayList<UserInputListener> listeners = new ArrayList<UserInputListener>();
+	private ArrayList<UserInputListener>	listeners			= new ArrayList<UserInputListener>();
 	
 	public GraphicsFrame(DrawingView givenDrawingView) {
 		centerPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -93,16 +95,16 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 	public void createLocationBar() {
 		locationBar = new ZoomLocationBar();
 		locationBar
-		.addLocationButtonPressListener(new LocationButtonActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-			}
-			
-			@Override
-			public void actionPerformed(String[] selectedPaths) {
-				moduleOpen(selectedPaths);
-			}
-		});
+				.addLocationButtonPressListener(new LocationButtonActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+					}
+					
+					@Override
+					public void actionPerformed(String[] selectedPaths) {
+						moduleOpen(selectedPaths);
+					}
+				});
 		updateGUI();
 	}
 	
@@ -154,13 +156,18 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 			l.hideDependencies();
 	}
 	
+	@Override
+	public void hideLibraries() {
+		for (UserInputListener l : listeners)
+			l.hideLibraries();
+	}
+	
 	public void hideLoadingScreen() {
 		layoutComponents();
 		locationBar.turnOnBar();
 		menuBar.turnOnBar();
 		
-		if (isVisible())
-			validate();
+		if (isVisible()) validate();
 	}
 	
 	@Override
@@ -189,18 +196,18 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 	private void initializeComponents() {
 		drawingScrollPane = new JScrollPane();
 		drawingScrollPane
-		.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+				.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		drawingScrollPane
-		.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+				.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		drawingScrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		
 		drawingScrollPane.setViewportView(drawingView);
 		
 		propertiesScrollPane = new JScrollPane();
 		propertiesScrollPane
-		.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+				.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		propertiesScrollPane
-		.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		
 		createMenuBar();
 		createLocationBar();
@@ -208,9 +215,9 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 		locationScrollPane = new JScrollPane(locationBar);
 		locationScrollPane.setPreferredSize(new Dimension(900, 35));
 		locationScrollPane
-		.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		locationScrollPane
-		.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+				.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		
 		setLayout(new BorderLayout());
 		add(menuBar, BorderLayout.NORTH);
@@ -245,44 +252,7 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 		drawingView.initializePanTool(drawingScrollPane.getViewport(),
 				drawingScrollPane);
 	}
-
-	private void resizeLocationBar() {
-		if (locationScrollPane.getHorizontalScrollBar().isShowing()) {
-			locationScrollPane.setPreferredSize(new Dimension(900, 50));
-		} else {
-			locationScrollPane.setPreferredSize(new Dimension(900, 35));
-		}
-	}
-
-	private void updateComponentsLocaleStrings() {
-		HashMap<String, String> menuBarLocale = new HashMap<String, String>();
-		menuBarLocale.put("DiagramOptions", localeService.getTranslatedString("DiagramOptions"));
-		menuBarLocale.put("Options", localeService.getTranslatedString("Options"));
-		menuBarLocale.put("Ok", localeService.getTranslatedString("OkButton"));
-		menuBarLocale.put("Apply", localeService.getTranslatedString("Apply"));
-		menuBarLocale.put("Cancel", localeService.getTranslatedString("CancelButton"));
-		menuBarLocale.put("Zoom", localeService.getTranslatedString("Zoom"));
-		menuBarLocale.put("ZoomIn", localeService.getTranslatedString("ZoomIn"));
-		menuBarLocale.put("ZoomOut", localeService.getTranslatedString("ZoomOut"));
-		menuBarLocale.put("Refresh", localeService.getTranslatedString("Refresh"));
-		menuBarLocale.put("HideDependencies", localeService.getTranslatedString("HideDependencies"));
-		menuBarLocale.put("ShowDependencies", localeService.getTranslatedString("ShowDependencies"));
-		menuBarLocale.put("HideViolations", localeService.getTranslatedString("HideViolations"));
-		menuBarLocale.put("ShowViolations", localeService.getTranslatedString("ShowViolations"));
-		menuBarLocale.put("HideExternalSystems", localeService.getTranslatedString("HideExternalSystems"));
-		menuBarLocale.put("ShowExternalSystems", localeService.getTranslatedString("ShowExternalSystems"));
-		menuBarLocale.put("LineContextUpdates", localeService.getTranslatedString("LineContextUpdates"));
-		menuBarLocale.put("ExportToImage", localeService.getTranslatedString("ExportToImage"));
-		menuBarLocale.put("LayoutStrategy", localeService.getTranslatedString("LayoutStrategy"));
-		menuBarLocale.put("DrawingOutOfDate", localeService.getTranslatedString("DrawingOutOfDate"));
-		menuBarLocale.put("HideModules", localeService.getTranslatedString("HideModules"));
-		menuBarLocale.put("RestoreHiddenModules", localeService.getTranslatedString("RestoreHiddenModules"));
-		menuBar.setLocale(menuBarLocale);
-
-		ROOT_LEVEL = localeService.getTranslatedString("Root");
-		locationBar.setLocale(ROOT_LEVEL);
-	}
-
+	
 	private void layoutComponents() {
 		centerPane.removeAll();
 		if (!showingProperties) {
@@ -296,8 +266,7 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 			centerPane.setContinuousLayout(true);
 		}
 		
-		if (isVisible())
-			validate();
+		if (isVisible()) validate();
 	}
 	
 	@Override
@@ -326,9 +295,8 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 	@Override
 	public void moduleZoomOut() {
 		String[] secondLastPath = locationBar.getSecondLastPath();
-		if (secondLastPath.length == 0)
-			for (UserInputListener l : listeners)
-				l.moduleZoomOut();
+		if (secondLastPath.length == 0) for (UserInputListener l : listeners)
+			l.moduleZoomOut();
 		else
 			moduleOpen(secondLastPath);
 	}
@@ -360,6 +328,13 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 	
 	public void resetCurrentPaths() {
 		currentPaths = new String[] {};
+	}
+	
+	private void resizeLocationBar() {
+		if (locationScrollPane.getHorizontalScrollBar().isShowing()) locationScrollPane
+				.setPreferredSize(new Dimension(900, 50));
+		else
+			locationScrollPane.setPreferredSize(new Dimension(900, 35));
 	}
 	
 	@Override
@@ -401,6 +376,12 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 		propertiesScrollPane.setViewportView(propertiesTable);
 	}
 	
+	@Override
+	public void showLibraries() {
+		for (UserInputListener l : listeners)
+			l.showLibraries();
+	}
+	
 	public void showLoadingScreen() {
 		locationBar.turnOffBar();
 		menuBar.turnOffBar();
@@ -420,8 +401,7 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 		
 		add(centerPane, java.awt.BorderLayout.CENTER);
 		
-		if (isVisible())
-			validate();
+		if (isVisible()) validate();
 	}
 	
 	public void showProperties() {
@@ -440,7 +420,7 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 		for (UserInputListener l : listeners)
 			l.showViolations();
 	}
-
+	
 	public void showViolationsProperties(ViolationDTO[] violationDTOs) {
 		showProperties();
 		ViolationTable propertiesTable = new ViolationTable(violationDTOs);
@@ -458,7 +438,7 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 	public void turnOffViolations() {
 		menuBar.setViolationsUIToInactive();
 	}
-
+	
 	public void turnOnDependencies() {
 		menuBar.setDependeciesUIToActive();
 	}
@@ -470,7 +450,54 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 	public void turnOnViolations() {
 		menuBar.setViolationsUIToActive();
 	}
-
+	
+	private void updateComponentsLocaleStrings() {
+		HashMap<String, String> menuBarLocale = new HashMap<String, String>();
+		menuBarLocale.put("DiagramOptions",
+				localeService.getTranslatedString("DiagramOptions"));
+		menuBarLocale.put("Options",
+				localeService.getTranslatedString("Options"));
+		menuBarLocale.put("Ok", localeService.getTranslatedString("OkButton"));
+		menuBarLocale.put("Apply", localeService.getTranslatedString("Apply"));
+		menuBarLocale.put("Cancel",
+				localeService.getTranslatedString("CancelButton"));
+		menuBarLocale.put("Zoom", localeService.getTranslatedString("Zoom"));
+		menuBarLocale
+				.put("ZoomIn", localeService.getTranslatedString("ZoomIn"));
+		menuBarLocale.put("ZoomOut",
+				localeService.getTranslatedString("ZoomOut"));
+		menuBarLocale.put("Refresh",
+				localeService.getTranslatedString("Refresh"));
+		menuBarLocale.put("HideDependencies",
+				localeService.getTranslatedString("HideDependencies"));
+		menuBarLocale.put("ShowDependencies",
+				localeService.getTranslatedString("ShowDependencies"));
+		menuBarLocale.put("HideViolations",
+				localeService.getTranslatedString("HideViolations"));
+		menuBarLocale.put("ShowViolations",
+				localeService.getTranslatedString("ShowViolations"));
+		menuBarLocale.put("HideExternalLibraries",
+				localeService.getTranslatedString("HideExternalLibraries"));
+		menuBarLocale.put("ShowExternalLibraries",
+				localeService.getTranslatedString("ShowExternalLibraries"));
+		menuBarLocale.put("LineContextUpdates",
+				localeService.getTranslatedString("LineContextUpdates"));
+		menuBarLocale.put("ExportToImage",
+				localeService.getTranslatedString("ExportToImage"));
+		menuBarLocale.put("LayoutStrategy",
+				localeService.getTranslatedString("LayoutStrategy"));
+		menuBarLocale.put("DrawingOutOfDate",
+				localeService.getTranslatedString("DrawingOutOfDate"));
+		menuBarLocale.put("HideModules",
+				localeService.getTranslatedString("HideModules"));
+		menuBarLocale.put("RestoreHiddenModules",
+				localeService.getTranslatedString("RestoreHiddenModules"));
+		menuBar.setLocale(menuBarLocale);
+		
+		ROOT_LEVEL = localeService.getTranslatedString("Root");
+		locationBar.setLocale(ROOT_LEVEL);
+	}
+	
 	public void updateGUI() {
 		locationBar.updateLocationBar(getCurrentPaths());
 		updateUI();
@@ -486,5 +513,17 @@ public class GraphicsFrame extends JInternalFrame implements UserInputListener {
 	public void useSelectTool() {
 		for (UserInputListener l : listeners)
 			l.useSelectTool();
+	}
+
+	@Override
+	public void disableThickLines() {
+		for (UserInputListener l : listeners)
+			l.disableThickLines();
+	}
+
+	@Override
+	public void enableThickLines() {
+		for (UserInputListener l : listeners)
+			l.enableThickLines();
 	}
 }

@@ -269,8 +269,7 @@ public class AnalyzedUnitComparator {
 				AnalyzedModuleComponent root = JtreeController.instance()
 						.getRootOfModel();
 				WarningMessageService.getInstance().resetNotAnalyzed();
-				WarningMessageService.getInstance()
-						.registerNotMappedUnits(root);
+				WarningMessageService.getInstance().registerNotMappedUnits(root);
 				StateService.instance().registerImportedData();
 				return root;
 			}

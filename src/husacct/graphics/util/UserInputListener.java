@@ -8,6 +8,10 @@ public interface UserInputListener {
 	
 	public void drawingZoomChanged(double zoomFactor);
 	
+	public void disableThickLines();
+	
+	public void enableThickLines();
+	
 	public void exportToImage();
 	
 	public void figureDeselected(BaseFigure[] figures);
@@ -21,6 +25,8 @@ public interface UserInputListener {
 	public void hideSmartLines();
 	
 	public void hideViolations();
+	
+	public void hideLibraries();
 	
 	public void moduleOpen(String[] paths);
 	
@@ -44,8 +50,10 @@ public interface UserInputListener {
 	
 	public void showViolations();
 	
+	public void showLibraries();
+	
 	public void usePanTool();
 	
 	public void useSelectTool();
-
+	
 }

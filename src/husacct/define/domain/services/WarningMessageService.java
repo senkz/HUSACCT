@@ -336,13 +336,9 @@ for (AbstractCombinedComponent ab : list) {
 		warnings = new ArrayList<WarningMessage>();
 	}
 
-
 	public void resetNotAnalyzed() {
 	codelevelWarnings = new ArrayList<CodeLevelWarning>();
 		
 	}
-
-
-	
 	
 }

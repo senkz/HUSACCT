@@ -2,8 +2,8 @@ package husacct.graphics.task;
 
 import husacct.ServiceProvider;
 import husacct.common.dto.AbstractDTO;
+import husacct.common.dto.AnalysedModuleDTO;
 import husacct.common.dto.DependencyDTO;
-import husacct.common.dto.ProjectDTO;
 import husacct.common.dto.ViolationDTO;
 import husacct.common.locale.ILocaleService;
 import husacct.common.services.IServiceListener;
@@ -42,27 +42,27 @@ import org.apache.log4j.Logger;
 import org.jhotdraw.draw.Figure;
 
 public abstract class DrawingController extends DrawingSettingsController {
-	private static final double MIN_ZOOMFACTOR = 0.25;
-	private static final double MAX_ZOOMFACTOR = 1.75;
+	private static final double					MIN_ZOOMFACTOR	= 0.25;
+	private static final double					MAX_ZOOMFACTOR	= 1.75;
 	
-	protected static final boolean debugPrint = true;
-	protected DrawingLayoutStrategy layoutStrategyOption;
+	protected static final boolean				debugPrint		= true;
+	protected DrawingLayoutStrategy				layoutStrategyOption;
 	
-	private final HashMap<String, DrawingState> storedStates = new HashMap<String, DrawingState>();
+	private final HashMap<String, DrawingState>	storedStates	= new HashMap<String, DrawingState>();
 	
-	private Drawing drawing;
-	private DrawingView drawingView;
-	private GraphicsFrame graphicsFrame;
+	private Drawing								drawing;
+	private DrawingView							drawingView;
+	private GraphicsFrame						graphicsFrame;
 	
-	protected ILocaleService localeService;
-	protected Logger logger = Logger.getLogger(DrawingController.class);
+	protected ILocaleService					localeService;
+	protected Logger							logger			= Logger.getLogger(DrawingController.class);
 	
-	private final FigureFactory figureFactory;
-	private final FigureConnectorStrategy connectionStrategy;
-	private LayoutStrategy layoutStrategy;
+	private final FigureFactory					figureFactory;
+	private final FigureConnectorStrategy		connectionStrategy;
+	private LayoutStrategy						layoutStrategy;
 	
-	protected ThreadMonitor threadMonitor;
-	private final FigureMap figureMap = new FigureMap();
+	protected ThreadMonitor						threadMonitor;
+	private final FigureMap						figureMap		= new FigureMap();
 	
 	public DrawingController() {
 		super();
@@ -137,12 +137,10 @@ public abstract class DrawingController extends DrawingSettingsController {
 	}
 	
 	public void drawLinesBasedOnSetting() {
-		if (areDependenciesShown())
-			drawDependenciesForShownModules();
-		if (areViolationsShown())
-			drawViolationsForShownModules();
-		if (areSmartLinesOn())
-			drawing.updateLineFigureToContext();
+		if (areDependenciesShown()) drawDependenciesForShownModules();
+		if (areViolationsShown()) drawViolationsForShownModules();
+		if (areSmartLinesOn()) drawing.updateLineFigureToContext();
+		if (areLinesThick()) drawing.updateLineFigureThicknesses();
 	}
 	
 	protected void drawLinesBasedOnSettingInTask() {
@@ -154,7 +152,7 @@ public abstract class DrawingController extends DrawingSettingsController {
 	protected void drawModulesAndLines(AbstractDTO[] modules) {
 		runDrawSingleLevelTask(modules);
 	}
-
+	
 	protected void drawModulesAndLines(
 			HashMap<String, ArrayList<AbstractDTO>> modules) {
 		runDrawMultiLevelTask(modules);
@@ -184,16 +182,14 @@ public abstract class DrawingController extends DrawingSettingsController {
 					BaseFigure generatedFigure = figureFactory
 							.createFigure(dto);
 					
-					if (parentFigure != null)
-						parentFigure.add(generatedFigure);
+					if (parentFigure != null) parentFigure.add(generatedFigure);
 					
 					drawing.add(generatedFigure);
 					figureMap.linkModule(generatedFigure, dto);
 				} catch (Exception e) {
 					logger.error("Could not generate and display figure.", e);
 				}
-			if (!parentName.isEmpty())
-				parentFigure.updateLayout();
+			if (!parentName.isEmpty()) parentFigure.updateLayout();
 		}
 	}
 	
@@ -203,14 +199,15 @@ public abstract class DrawingController extends DrawingSettingsController {
 		updateLayout();
 		
 		/*
-		 * If we are at root level(projects)
-		 * if(modules.length != 0 && !(modules[0] instanceof ProjectDTO))  */
+		 * If we are at root level(projects) if(modules.length != 0 &&
+		 * !(modules[0] instanceof ProjectDTO))
+		 */
 		
 		drawLinesBasedOnSetting();
 		graphicsFrame.setCurrentPaths(getCurrentPaths());
 		graphicsFrame.updateGUI();
 	}
-
+	
 	public void drawSingleLevelModules(AbstractDTO[] modules) {
 		for (AbstractDTO dto : modules)
 			try {
@@ -240,8 +237,7 @@ public abstract class DrawingController extends DrawingSettingsController {
 		BaseFigure[] shownModules = drawing.getShownModules();
 		for (BaseFigure figureFrom : shownModules)
 			for (BaseFigure figureTo : shownModules)
-				if (figureFrom == figureTo)
-					getAndDrawViolationsIn(figureFrom);
+				if (figureFrom == figureTo) getAndDrawViolationsIn(figureFrom);
 				else
 					getAndDrawViolationsBetween(figureFrom, figureTo);
 	}
@@ -266,48 +262,62 @@ public abstract class DrawingController extends DrawingSettingsController {
 	
 	@Override
 	public void figureDeselected(BaseFigure[] figures) {
-		if (drawingView.getSelectionCount() == 0)
-			graphicsFrame.hideProperties();
+		if (drawingView.getSelectionCount() == 0) graphicsFrame
+		.hideProperties();
 	}
 	
 	@Override
 	public void figureSelected(BaseFigure[] figures) {
 		BaseFigure selectedFigure = figures[0];
-		if (figureMap.isViolatedFigure(selectedFigure))
-			graphicsFrame.showViolationsProperties(figureMap
-					.getViolatedDTOs(selectedFigure));
-		else if (figureMap.isViolationLine(selectedFigure))
-			graphicsFrame.showViolationsProperties(figureMap
-					.getViolationDTOs(selectedFigure));
-		else if (figureMap.isDependencyLine(selectedFigure))
-			graphicsFrame.showDependenciesProperties(figureMap
-					.getDependencyDTOs(selectedFigure));
+		if (figureMap.isViolatedFigure(selectedFigure)) graphicsFrame
+		.showViolationsProperties(figureMap
+				.getViolatedDTOs(selectedFigure));
+		else if (figureMap.isViolationLine(selectedFigure)) graphicsFrame
+		.showViolationsProperties(figureMap
+				.getViolationDTOs(selectedFigure));
+		else if (figureMap.isDependencyLine(selectedFigure)) graphicsFrame
+		.showDependenciesProperties(figureMap
+				.getDependencyDTOs(selectedFigure));
 		else
 			graphicsFrame.hideProperties();
 	}
+	
+	public BaseFigure[] getAllFigures() {
+		return drawingView.toFigureArray(drawingView.findFigures(drawingView
+				.getBounds()));
+	}
+	
+	private void getAndDrawDependenciesBetween(BaseFigure figureFrom,
+			BaseFigure figureTo) {
+		
+		AnalysedModuleDTO moduleFromDTO = (AnalysedModuleDTO) getFigureMap().getModuleDTO(figureFrom);
+		
+		AnalysedModuleDTO moduleToDTO = (AnalysedModuleDTO) getFigureMap().getModuleDTO(figureTo);
+		
+		if(!moduleFromDTO.uniqueName.equals(moduleToDTO.uniqueName)){
+			DependencyDTO[] dependencies = getDependenciesBetween(figureFrom,
+					figureTo);
+			if (dependencies.length > 0) drawDependenciesBetween(dependencies,
+					figureFrom, figureTo);
+		}
 
-	private void getAndDrawDependenciesBetween(BaseFigure figureFrom, BaseFigure figureTo) {
-		DependencyDTO[] dependencies = getDependenciesBetween(figureFrom, figureTo);
-		if (dependencies.length > 0)
-			drawDependenciesBetween(dependencies, figureFrom, figureTo);
 	}
 	
 	private void getAndDrawViolationsBetween(BaseFigure figureFrom,
 			BaseFigure figureTo) {
 		ViolationDTO[] violations = getViolationsBetween(figureFrom, figureTo);
-		if (violations.length > 0)
-			drawViolationsBetween(violations, figureFrom, figureTo);
+		if (violations.length > 0) drawViolationsBetween(violations,
+				figureFrom, figureTo);
 	}
 	
 	private void getAndDrawViolationsIn(BaseFigure figureFrom) {
 		ViolationDTO[] violations = getViolationsBetween(figureFrom, figureFrom);
-		if (violations.length > 0)
-			drawViolationsIn(violations, figureFrom);
+		if (violations.length > 0) drawViolationsIn(violations, figureFrom);
 	}
 	
 	protected abstract DependencyDTO[] getDependenciesBetween(
 			BaseFigure figureFrom, BaseFigure figureTo);
-
+	
 	public Drawing getDrawing() {
 		return drawing;
 	}
@@ -324,7 +334,7 @@ public abstract class DrawingController extends DrawingSettingsController {
 		return layoutStrategyOption;
 	}
 	
-	public BaseFigure[] getSelectedFigures(){
+	public BaseFigure[] getSelectedFigures() {
 		return drawingView.toFigureArray(drawingView.getSelectedFigures());
 	}
 	
@@ -358,7 +368,7 @@ public abstract class DrawingController extends DrawingSettingsController {
 		graphicsFrame.turnOffViolations();
 		drawing.setFiguresNotViolated(figureMap.getViolatedFigures());
 	}
-
+	
 	private void initializeComponents() {
 		drawing = new Drawing();
 		drawing.setFigureMap(figureMap);
@@ -382,23 +392,27 @@ public abstract class DrawingController extends DrawingSettingsController {
 		
 		if (selection.size() > 0) {
 			ArrayList<BaseFigure> figures = new ArrayList<BaseFigure>();
-			java.util.Collections.addAll(figures, selection.toArray(new BaseFigure[selection.size()]));
+			java.util.Collections.addAll(figures,
+					selection.toArray(new BaseFigure[selection.size()]));
 			
 			for (BaseFigure f : figures)
 				f.setContext(false); // minimising potential side effects
 			
+			drawingView.clearSelection();
 			drawingView.selectAll();
-			List<BaseFigure> allFigures = Arrays.asList(drawingView.getSelectedFigures().toArray(new BaseFigure[0]));
+			List<BaseFigure> allFigures = Arrays.asList(drawingView
+					.getSelectedFigures().toArray(new BaseFigure[0]));
 			drawingView.clearSelection();
 			drawingView.addToSelection(selection);
 			
 			for (BaseFigure f : allFigures)
-				if (!f.isContext() && f.isModule() && !figures.contains(f)) {
+				if (!f.isContext() && !figures.contains(f)) {
 					f.setContext(true);
 					figures.add(f);
 				} else
 					f.setContext(false);
-			BaseFigure[] selectedFigures = figures.toArray(new BaseFigure[figures.size()]);
+			BaseFigure[] selectedFigures = figures
+					.toArray(new BaseFigure[figures.size()]);
 			this.moduleZoom(selectedFigures);
 		}
 	}
@@ -415,13 +429,14 @@ public abstract class DrawingController extends DrawingSettingsController {
 			String rect = String.format(Locale.US,
 					"[x=%1.2f,y=%1.2f,w=%1.2f,h=%1.2f]", bounds.x, bounds.y,
 					bounds.width, bounds.height);
-			if (bf.getName().equals("Main"))
-				System.out.println(String.format("%s: %s", bf.getName(), rect));
+			if (bf.getName().equals("Main")) System.out.println(String.format(
+					"%s: %s", bf.getName(), rect));
 		}
 	}
 	
-	@Override
-	public abstract void refreshDrawing();
+	public void refreshDrawing(){
+		drawing.restoreHiddenFigures();
+	}
 	
 	public void refreshFrame() {
 		graphicsFrame.refreshFrame();
@@ -452,11 +467,11 @@ public abstract class DrawingController extends DrawingSettingsController {
 			HashMap<String, ArrayList<AbstractDTO>> modules) {
 		runThread(new DrawingMultiLevelThread(this, modules));
 	}
-
+	
 	private void runDrawSingleLevelTask(AbstractDTO[] modules) {
 		runThread(new DrawingSingleLevelThread(this, modules));
 	}
-
+	
 	private void runThread(Runnable runnable) {
 		if (!threadMonitor.add(runnable)) {
 			logger.warn("A drawing thread is already running. Wait until it has finished before running another.");
@@ -467,8 +482,7 @@ public abstract class DrawingController extends DrawingSettingsController {
 	protected void saveFigurePositions() {
 		String paths = getCurrentPathsToString();
 		DrawingState state;
-		if (storedStates.containsKey(paths))
-			state = storedStates.get(paths);
+		if (storedStates.containsKey(paths)) state = storedStates.get(paths);
 		else
 			state = new DrawingState(drawing);
 		
@@ -477,15 +491,13 @@ public abstract class DrawingController extends DrawingSettingsController {
 	}
 	
 	public void saveSingleLevelFigurePositions() {
-		if (getCurrentPaths().length < 2)
-			saveFigurePositions();
+		if (getCurrentPaths().length < 2) saveFigurePositions();
 	}
 	
 	@Override
 	public void setCurrentPaths(String[] paths) {
 		super.setCurrentPaths(paths);
-		if (!getCurrentPaths()[0].isEmpty())
-			drawingView.canZoomOut();
+		if (!getCurrentPaths()[0].isEmpty()) drawingView.canZoomOut();
 		else
 			drawingView.cannotZoomOut();
 	}
@@ -542,12 +554,8 @@ public abstract class DrawingController extends DrawingSettingsController {
 	protected void updateLayout() {
 		String currentPaths = getCurrentPathsToString();
 		
-		if (hasSavedFigureStates(currentPaths))
-			restoreFigurePositions(currentPaths);
-		else {
-			layoutStrategy.doLayout();
-			drawingView.setHasHiddenFigures(false);
-		}
+		layoutStrategy.doLayout();
+		drawingView.setHasHiddenFigures(false);
 		
 		drawing.updateLines();
 	}

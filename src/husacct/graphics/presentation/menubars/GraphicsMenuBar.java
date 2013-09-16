@@ -1,6 +1,7 @@
 package husacct.graphics.presentation.menubars;
 
 import husacct.common.Resource;
+import husacct.common.help.presentation.HelpableJPanel;
 import husacct.graphics.presentation.dialogs.GraphicsOptionsDialog;
 import husacct.graphics.presentation.figures.BaseFigure;
 import husacct.graphics.util.DrawingLayoutStrategy;
@@ -20,7 +21,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -28,27 +28,28 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 
-public class GraphicsMenuBar extends JPanel implements UserInputListener {
-	private static final long serialVersionUID = -7419378432318031359L;
+public class GraphicsMenuBar extends HelpableJPanel implements
+		UserInputListener {
+	private static final long				serialVersionUID	= -7419378432318031359L;
 	
-	protected Logger logger = Logger.getLogger(GraphicsMenuBar.class);
-	private ArrayList<UserInputListener> listeners = new ArrayList<UserInputListener>();
+	protected Logger						logger				= Logger.getLogger(GraphicsMenuBar.class);
+	private ArrayList<UserInputListener>	listeners			= new ArrayList<UserInputListener>();
 	
-	private HashMap<String, String> icons;
-	private ArrayList<JComponent> actions;
+	private HashMap<String, String>			icons;
+	private ArrayList<JComponent>			actions;
 	
-	private JButton zoomInButton, zoomOutButton, refreshButton,
-	exportToImageButton, optionsDialogButton, showDependenciesButton,
-	showViolationsButton, outOfDateButton, panToolButton,
-	selectToolButton;
+	private JButton							zoomInButton, zoomOutButton,
+			refreshButton, exportToImageButton, optionsDialogButton,
+			showDependenciesButton, showViolationsButton, outOfDateButton,
+			panToolButton, selectToolButton;
 	
-	private JSlider zoomSlider;
-	private GraphicsOptionsDialog graphicsOptionsDialog;
+	private JSlider							zoomSlider;
+	private GraphicsOptionsDialog			graphicsOptionsDialog;
 	
-	private int menuItemMaxHeight = 45;
-	private HashMap<String, String> menuBarLocale;
+	private int								menuItemMaxHeight	= 45;
+	private HashMap<String, String>			menuBarLocale;
 	
-	private final ContextMenuButton zoomOptionsMenu;
+	private final ContextMenuButton			zoomOptionsMenu;
 	
 	public GraphicsMenuBar() {
 		zoomOptionsMenu = new ContextMenuButton();
@@ -130,6 +131,12 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 	}
 	
 	@Override
+	public void hideLibraries() {
+		for (UserInputListener l : listeners)
+			l.hideLibraries();
+	}
+	
+	@Override
 	public void hideModules() {
 		for (UserInputListener listener : listeners)
 			listener.hideModules();
@@ -161,8 +168,8 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (SwingUtilities.isRightMouseButton(e)
-						&& e.getClickCount() == 1)
-					zoomOptionsMenu.show(zoomInButton, e.getX(), e.getY());
+						&& e.getClickCount() == 1) zoomOptionsMenu.show(
+						zoomInButton, e.getX(), e.getY());
 			}
 			
 			@Override
@@ -212,8 +219,7 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (showDependenciesButton.getToolTipText().equals(
-						menuBarLocale.get("HideDependencies")))
-					hideDependencies();
+						menuBarLocale.get("HideDependencies"))) hideDependencies();
 				else
 					showDependencies();
 				refreshDrawing();
@@ -227,8 +233,7 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (showViolationsButton.getToolTipText().equals(
-						menuBarLocale.get("HideViolations")))
-					hideViolations();
+						menuBarLocale.get("HideViolations"))) hideViolations();
 				else
 					showViolations();
 				refreshDrawing();
@@ -255,7 +260,8 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 				useSelectTool();
 				selectToolButton.setBorder(BorderFactory
 						.createLineBorder(Color.MAGENTA));
-				panToolButton.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+				panToolButton.setBorder(BorderFactory
+						.createLineBorder(Color.GRAY));
 			}
 		});
 		add(selectToolButton);
@@ -269,7 +275,8 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				usePanTool();
-				selectToolButton.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+				selectToolButton.setBorder(BorderFactory
+						.createLineBorder(Color.GRAY));
 				panToolButton.setBorder(BorderFactory
 						.createLineBorder(Color.MAGENTA));
 			}
@@ -319,7 +326,6 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 		for (UserInputListener listener : listeners)
 			listener.moduleZoom();
 	}
-	
 	
 	@Override
 	public void moduleZoom(BaseFigure[] zoomedModuleFigure) {
@@ -434,14 +440,14 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 	public void setViolationsUIToActive() {
 		setButtonIcon(showViolationsButton, "violationsHide");
 		showViolationsButton
-		.setToolTipText(menuBarLocale.get("HideViolations"));
+				.setToolTipText(menuBarLocale.get("HideViolations"));
 		graphicsOptionsDialog.setViolationsUIToActive();
 	}
 	
 	public void setViolationsUIToInactive() {
 		setButtonIcon(showViolationsButton, "violationsShow");
 		showViolationsButton
-		.setToolTipText(menuBarLocale.get("ShowViolations"));
+				.setToolTipText(menuBarLocale.get("ShowViolations"));
 		graphicsOptionsDialog.setViolationsUIToInactive();
 	}
 	
@@ -458,6 +464,12 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 	}
 	
 	@Override
+	public void showLibraries() {
+		for (UserInputListener l : listeners)
+			l.showLibraries();
+	}
+	
+	@Override
 	public void showSmartLines() {
 		for (UserInputListener l : listeners)
 			l.showSmartLines();
@@ -468,6 +480,7 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 		for (UserInputListener l : listeners)
 			l.showViolations();
 	}
+	
 	public void turnOffBar() {
 		for (JComponent comp : actions)
 			comp.setEnabled(false);
@@ -494,5 +507,17 @@ public class GraphicsMenuBar extends JPanel implements UserInputListener {
 	public void useSelectTool() {
 		for (UserInputListener l : listeners)
 			l.useSelectTool();
+	}
+
+	@Override
+	public void disableThickLines() {
+		for (UserInputListener l : listeners)
+			l.disableThickLines();
+	}
+
+	@Override
+	public void enableThickLines() {
+		for (UserInputListener l : listeners)
+			l.enableThickLines();
 	}
 }
